@@ -5,27 +5,37 @@ import streamlit as st
 
 from utils import process_pdf
 from chatbot import ask_resume, compare_resume
+from intent import detect_intent
 
 
 # ---------------- Page Config ---------------- #
+
 st.set_page_config(
     page_title="LLM-Powered Resume Analyzer using RAG",
     page_icon="🤖",
     layout="wide"
 )
+
+
 # ---------------- Custom CSS ---------------- #
 
 st.markdown(load_css(), unsafe_allow_html=True)
 
 st.markdown(
     """
-    <div class="title">🤖 LLM-Powered Resume Analyzer using RAG</div>
+    <div class="title">
+        🤖 LLM-Powered Resume Analyzer using RAG
+    </div>
+
     <div class="subtitle">
-        Analyze resumes using Large Language Models (LLMs), Retrieval-Augmented Generation (RAG), and AI-powered career insights.
+        Analyze resumes using Large Language Models (LLMs),
+        Retrieval-Augmented Generation (RAG),
+        and AI-powered career insights.
     </div>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
+
 
 # ---------------- Session State ---------------- #
 
@@ -34,6 +44,10 @@ if "messages" not in st.session_state:
 
 if "vector_store" not in st.session_state:
     st.session_state.vector_store = None
+
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
 
 # ---------------- Sidebar ---------------- #
 
@@ -48,10 +62,15 @@ with st.sidebar:
 
     if uploaded_file is not None:
 
-        with st.spinner("📄 Reading Resume..."):
-            st.session_state.vector_store = process_pdf(uploaded_file)
+        if st.session_state.vector_store is None:
 
-        st.success("✅ Resume uploaded successfully!")
+            with st.spinner("📄 Processing Resume..."):
+
+                st.session_state.vector_store = process_pdf(
+                    uploaded_file
+                )
+
+            st.success("✅ Resume uploaded successfully!")
 
     st.divider()
 
@@ -64,36 +83,46 @@ with st.sidebar:
 
     st.divider()
 
-    st.subheader("💡 Try Asking")
+    st.subheader("💡 Example Questions")
 
     st.markdown("""
 - 📄 Summarize my resume
-- ⭐ Rate my skills
-- 🎯 ATS Score
-- 💼 Which job roles suit me?
-- ❌ What skills are missing?
-- 📚 Recommend certifications
+- ⭐ ATS Score
+- 💼 Which job suits me?
 - 🎤 Generate interview questions
 - 📝 Improve my resume
+- 📚 Recommend certifications
+- 📂 Explain my projects
+- 💻 What are my technical skills?
+- 📈 Do I qualify for a Data Engineer role?
 """)
 
     st.divider()
 
     if st.button("🗑 Clear Chat"):
+
         st.session_state.messages = []
+        st.session_state.chat_history = []
+
         st.rerun()
+
 
 # ---------------- Welcome ---------------- #
 
 if st.session_state.vector_store is None:
-    st.info("👈 Upload your resume from the sidebar.")
+
+    st.info(
+        "👈 Upload your resume from the sidebar to start chatting."
+    )
+
 
 # ---------------- Chat History ---------------- #
 
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
 
+    with st.chat_message(message["role"]):
+
+        st.markdown(message["content"])
 # ---------------- Chat ---------------- #
 
 question = st.chat_input("Ask anything about your resume...")
@@ -101,10 +130,15 @@ question = st.chat_input("Ask anything about your resume...")
 if question:
 
     if st.session_state.vector_store is None:
+
         st.warning("⚠ Please upload a resume first.")
 
     else:
 
+        # Detect intent
+        intent = detect_intent(question)
+
+        # Save user message
         st.session_state.messages.append(
             {
                 "role": "user",
@@ -115,78 +149,174 @@ if question:
         with st.chat_message("user"):
             st.markdown(question)
 
+        # Get AI response
         with st.spinner("🤖 AI is analyzing your resume..."):
 
             analysis, docs = ask_resume(
                 question,
-                st.session_state.vector_store
+                st.session_state.vector_store,
+                intent,
+                st.session_state.chat_history
             )
-
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": analysis["summary"]
-            }
-        )
 
         with st.chat_message("assistant"):
 
-            col1, col2 = st.columns(2)
+            # ---------------- SUMMARY ---------------- #
 
-            with col1:
+            if intent == "summary":
+
+                assistant_reply = analysis.get("summary", "")
+
+                st.subheader("📄 Resume Summary")
+                st.write(assistant_reply)
+
+            # ---------------- ATS ---------------- #
+
+            elif intent == "ats":
+
+                score = analysis.get("ats_score", 0)
+
+                assistant_reply = f"ATS Score : {score}/100"
+
                 st.metric(
                     "📊 ATS Score",
-                    f"{analysis['ats_score']}/100"
-                )
-                st.progress(analysis["ats_score"] / 100)
-
-            with col2:
-                st.metric(
-                    "💼 Best Role",
-                    analysis["recommended_roles"][0]
-                    if analysis["recommended_roles"]
-                    else "-"
+                    f"{score}/100"
                 )
 
-            st.divider()
+                st.progress(score / 100)
 
-            st.subheader("📄 Resume Summary")
-            st.write(analysis["summary"])
+                st.write(
+                    analysis.get("reason", "")
+                )
 
-            st.divider()
+            # ---------------- ROLES ---------------- #
 
-            col1, col2 = st.columns(2)
+            elif intent == "roles":
 
-            with col1:
-                st.subheader("✅ Strengths")
-                for item in analysis["strengths"]:
-                    st.success(item)
+                roles = analysis.get(
+                    "recommended_roles",
+                    []
+                )
 
-            with col2:
-                st.subheader("⚠ Weaknesses")
-                for item in analysis["weaknesses"]:
-                    st.error(item)
+                assistant_reply = "\n".join(roles)
 
-            st.divider()
+                st.subheader("💼 Recommended Roles")
 
-            st.subheader("💼 Recommended Roles")
+                for role in roles:
+                    st.success(role)
 
-            for role in analysis["recommended_roles"]:
-                st.success(role)
+            # ---------------- SKILLS ---------------- #
 
-            st.divider()
+            elif intent == "skills":
 
-            st.subheader("📚 Missing Skills")
+                skills = analysis.get("skills", [])
+                missing = analysis.get("missing_skills", [])
 
-            for skill in analysis["missing_skills"]:
-                st.warning(skill)
+                assistant_reply = "\n".join(skills)
 
-            st.divider()
+                col1, col2 = st.columns(2)
 
-            st.subheader("🎤 Interview Questions")
+                with col1:
 
-            for q in analysis["interview_questions"]:
-                st.info(q)
+                    st.subheader("✅ Skills")
+
+                    for skill in skills:
+                        st.success(skill)
+
+                with col2:
+
+                    st.subheader("⚠ Missing Skills")
+
+                    for skill in missing:
+                        st.warning(skill)
+
+            # ---------------- INTERVIEW ---------------- #
+
+            elif intent == "interview":
+
+                questions = analysis.get(
+                    "interview_questions",
+                    []
+                )
+
+                assistant_reply = "\n".join(questions)
+
+                st.subheader("🎤 Interview Questions")
+
+                for q in questions:
+                    st.info(q)
+
+            # ---------------- IMPROVEMENTS ---------------- #
+
+            elif intent == "improve":
+
+                improvements = analysis.get(
+                    "resume_improvements",
+                    []
+                )
+
+                assistant_reply = "\n".join(improvements)
+
+                st.subheader("📝 Resume Improvements")
+
+                for tip in improvements:
+                    st.success(tip)
+
+            # ---------------- CERTIFICATIONS ---------------- #
+
+            elif intent == "certifications":
+
+                certs = analysis.get(
+                    "certifications",
+                    []
+                )
+
+                assistant_reply = "\n".join(certs)
+
+                st.subheader("📚 Recommended Certifications")
+
+                for cert in certs:
+                    st.info(cert)
+
+            # ---------------- PROJECTS ---------------- #
+
+            elif intent == "projects":
+
+                projects = analysis.get(
+                    "projects",
+                    []
+                )
+
+                assistant_reply = "\n".join(projects)
+
+                st.subheader("📂 Projects")
+
+                for project in projects:
+                    st.success(project)
+
+            # ---------------- EXPERIENCE ---------------- #
+
+            elif intent == "experience":
+
+                assistant_reply = analysis.get(
+                    "experience",
+                    ""
+                )
+
+                st.subheader("💼 Experience")
+
+                st.write(assistant_reply)
+
+            # ---------------- GENERAL ---------------- #
+
+            else:
+
+                assistant_reply = analysis.get(
+                    "answer",
+                    "No response generated."
+                )
+
+                st.write(assistant_reply)
 
             st.divider()
 
@@ -195,7 +325,7 @@ if question:
             with open(pdf_file, "rb") as file:
 
                 st.download_button(
-                    "⬇ Download Resume Report",
+                    "⬇ Download Report",
                     file,
                     "Resume_Report.pdf",
                     "application/pdf"
@@ -203,20 +333,49 @@ if question:
 
             st.divider()
 
-            with st.expander("📄 Retrieved Resume Sections"):
+            with st.expander("📄 Retrieved Resume Chunks"):
 
-                for i, doc in enumerate(docs, start=1):
+                for i, doc in enumerate(
+                    docs,
+                    start=1
+                ):
+
                     st.markdown(f"### Chunk {i}")
                     st.write(doc.page_content)
                     st.divider()
 
-# ======================================================
-# Resume vs Job Description Matching
-# ======================================================
+        # Save messages
+
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": assistant_reply
+            }
+        )
+
+        # Save conversation memory
+
+        st.session_state.chat_history.append(
+            (
+                "Human",
+                question
+            )
+        )
+
+        st.session_state.chat_history.append(
+            (
+                "AI",
+                assistant_reply
+            )
+        )
+
+# ==========================================================
+# Resume vs Job Description
+# ==========================================================
 
 st.divider()
 
-st.header("🎯 Resume vs Job Description Match")
+st.header("🎯 Resume vs Job Description Matching")
 
 if st.button("Compare Resume with JD"):
 
@@ -226,11 +385,13 @@ if st.button("Compare Resume with JD"):
 
     elif job_description.strip() == "":
 
-        st.warning("Please paste a Job Description.")
+        st.warning("Please enter a Job Description.")
 
     else:
 
-        with st.spinner("Comparing Resume with Job Description..."):
+        with st.spinner(
+            "Comparing Resume with Job Description..."
+        ):
 
             jd_analysis = compare_resume(
                 st.session_state.vector_store,
@@ -250,34 +411,48 @@ if st.button("Compare Resume with JD"):
 
         st.subheader("✅ Matching Skills")
 
-        for skill in jd_analysis["matching_skills"]:
+        for skill in jd_analysis.get(
+            "matching_skills",
+            []
+        ):
             st.success(skill)
 
         st.subheader("❌ Missing Skills")
 
-        for skill in jd_analysis["missing_skills"]:
+        for skill in jd_analysis.get(
+            "missing_skills",
+            []
+        ):
             st.error(skill)
 
         st.subheader("💪 Strengths")
 
-        for s in jd_analysis["strengths"]:
-            st.success(s)
+        for strength in jd_analysis.get(
+            "strengths",
+            []
+        ):
+            st.success(strength)
 
         st.subheader("⚠ Weaknesses")
 
-        for w in jd_analysis["weaknesses"]:
-            st.warning(w)
+        for weakness in jd_analysis.get(
+            "weaknesses",
+            []
+        ):
+            st.warning(weakness)
 
         st.subheader("💡 Suggestions")
 
-        for tip in jd_analysis["suggestions"]:
-            st.info(tip)
-
-        st.divider()
-
-        # ---------------- Resume Improvements ---------------- #
+        for suggestion in jd_analysis.get(
+            "suggestions",
+            []
+        ):
+            st.info(suggestion)
 
         st.subheader("📝 Resume Improvements")
 
-        for improvement in jd_analysis.get("resume_improvements", []):
+        for improvement in jd_analysis.get(
+            "resume_improvements",
+            []
+        ):
             st.success(improvement)

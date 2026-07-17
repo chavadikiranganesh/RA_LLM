@@ -5,108 +5,220 @@ import streamlit as st
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 
-from prompts import build_prompt, build_jd_prompt
 from ats import calculate_ats_score
+
+from prompts import (
+    build_summary_prompt,
+    build_ats_prompt,
+    build_skills_prompt,
+    build_roles_prompt,
+    build_interview_prompt,
+    build_improvement_prompt,
+    build_cert_prompt,
+    build_project_prompt,
+    build_experience_prompt,
+    build_general_prompt,
+    build_jd_prompt
+)
+
+# ---------------------------------------------------------
+# Load Environment
+# ---------------------------------------------------------
 
 load_dotenv()
 
-groq_api_key = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
+groq_api_key = (
+    st.secrets.get("GROQ_API_KEY")
+    or os.getenv("GROQ_API_KEY")
+)
 
 llm = ChatGroq(
     groq_api_key=groq_api_key,
     model_name="llama-3.3-70b-versatile",
     temperature=0
 )
-def ask_resume(question, vector_store):
-    """
-    Ask questions about the uploaded resume.
-    """
 
-    # Retrieve relevant chunks
+
+# ---------------------------------------------------------
+# Helper Function
+# ---------------------------------------------------------
+
+def clean_json_response(content: str):
+
+    content = content.strip()
+
+    if content.startswith("```json"):
+        content = (
+            content.replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )
+
+    elif content.startswith("```"):
+        content = (
+            content.replace("```", "")
+            .strip()
+        )
+
+    return content
+
+
+# ---------------------------------------------------------
+# Resume Chat
+# ---------------------------------------------------------
+
+def ask_resume(
+    question,
+    vector_store,
+    intent,
+    chat_history
+):
+
+    # Retrieve relevant resume chunks
+
     docs = vector_store.similarity_search(
         question,
-        k=3
+        k=4
     )
 
-    # Combine retrieved chunks
     context = "\n\n".join(
-        doc.page_content for doc in docs
+        doc.page_content
+        for doc in docs
     )
 
-    # Build prompt
-    prompt = build_prompt(
-        context=context,
-        question=question
+    # Conversation history
+
+    history = "\n".join(
+        f"{role}: {message}"
+        for role, message in chat_history[-6:]
     )
 
-    # Call LLM
+    # ---------------- Prompt Routing ---------------- #
+
+    if intent == "summary":
+
+        prompt = build_summary_prompt(
+            context
+        )
+
+    elif intent == "ats":
+
+        prompt = build_ats_prompt(
+            context
+        )
+
+    elif intent == "skills":
+
+        prompt = build_skills_prompt(
+            context
+        )
+
+    elif intent == "roles":
+
+        prompt = build_roles_prompt(
+            context
+        )
+
+    elif intent == "interview":
+
+        prompt = build_interview_prompt(
+            context
+        )
+
+    elif intent == "improve":
+
+        prompt = build_improvement_prompt(
+            context
+        )
+
+    elif intent == "certifications":
+
+        prompt = build_cert_prompt(
+            context
+        )
+
+    elif intent == "projects":
+
+        prompt = build_project_prompt(
+            context
+        )
+
+    elif intent == "experience":
+
+        prompt = build_experience_prompt(
+            context
+        )
+
+    else:
+
+        prompt = build_general_prompt(
+            context,
+            question,
+            history
+        )
+
+    # Invoke LLM
+
     response = llm.invoke(prompt)
 
-    content = response.content.strip()
-
-    # Remove markdown if present
-    if content.startswith("```json"):
-        content = content.replace("```json", "").replace("```", "").strip()
-    elif content.startswith("```"):
-        content = content.replace("```", "").strip()
+    content = clean_json_response(
+        response.content
+    )
 
     try:
+
         analysis = json.loads(content)
 
-        # Replace AI ATS score with your ATS algorithm
-        analysis["ats_score"] = calculate_ats_score(context)
-
-    except json.JSONDecodeError:
+    except Exception:
 
         analysis = {
-            "summary": content,
-            "ats_score": calculate_ats_score(context),
-            "strengths": [],
-            "weaknesses": [],
-            "recommended_roles": [],
-            "missing_skills": [],
-            "interview_questions": []
+            "answer": content
         }
 
-    return analysis, docs
+    # ATS Score
 
+    if intent == "ats":
+
+        analysis["ats_score"] = calculate_ats_score(
+            context
+        )
+
+    return analysis, docs
+# ---------------------------------------------------------
+# Resume vs Job Description
+# ---------------------------------------------------------
 
 def compare_resume(vector_store, job_description):
-    """
-    Compare uploaded resume with Job Description.
-    """
 
-    # Retrieve resume sections relevant to the JD
+    # Retrieve the most relevant resume chunks
     docs = vector_store.similarity_search(
         job_description,
         k=5
     )
 
     context = "\n\n".join(
-        doc.page_content for doc in docs
+        doc.page_content
+        for doc in docs
     )
 
-    # Build JD prompt
+    # Build JD comparison prompt
     prompt = build_jd_prompt(
-        context=context,
-        job_description=job_description
+        context,
+        job_description
     )
 
     # Call LLM
     response = llm.invoke(prompt)
 
-    content = response.content.strip()
-
-    # Remove markdown if present
-    if content.startswith("```json"):
-        content = content.replace("```json", "").replace("```", "").strip()
-    elif content.startswith("```"):
-        content = content.replace("```", "").strip()
+    content = clean_json_response(
+        response.content
+    )
 
     try:
+
         analysis = json.loads(content)
 
-    except json.JSONDecodeError:
+    except Exception:
 
         analysis = {
             "match_score": 0,
@@ -114,7 +226,18 @@ def compare_resume(vector_store, job_description):
             "missing_skills": [],
             "strengths": [],
             "weaknesses": [],
-            "suggestions": []
+            "suggestions": [],
+            "resume_improvements": []
         }
+
+    # Ensure all keys exist
+
+    analysis.setdefault("match_score", 0)
+    analysis.setdefault("matching_skills", [])
+    analysis.setdefault("missing_skills", [])
+    analysis.setdefault("strengths", [])
+    analysis.setdefault("weaknesses", [])
+    analysis.setdefault("suggestions", [])
+    analysis.setdefault("resume_improvements", [])
 
     return analysis
