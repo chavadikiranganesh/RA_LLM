@@ -17,101 +17,122 @@ def create_pdf(analysis):
 
     story = []
 
-    story.append(Paragraph("<b>AI Resume Analysis Report</b>", styles["Title"]))
+    story.append(
+        Paragraph(
+            "AI Resume Analysis Report",
+            styles["Title"]
+        )
+    )
 
     story.append(Spacer(1, 20))
 
-    story.append(
-        Paragraph(
-            f"<b>ATS Score:</b> {analysis['ats_score']}/100",
-            styles["Heading2"]
-        )
-    )
+    # ---------- ATS ----------
 
-    story.append(Spacer(1, 12))
+    if analysis.get("ats_score") is not None:
 
-    story.append(
-        Paragraph(
-            "<b>Resume Summary</b>",
-            styles["Heading2"]
-        )
-    )
-
-    story.append(
-        Paragraph(
-            analysis["summary"],
-            styles["BodyText"]
-        )
-    )
-
-    story.append(Spacer(1, 12))
-
-    story.append(
-        Paragraph(
-            "<b>Strengths</b>",
-            styles["Heading2"]
-        )
-    )
-
-    for s in analysis["strengths"]:
         story.append(
-            Paragraph("• " + s, styles["BodyText"])
+            Paragraph(
+                f"<b>ATS Score:</b> {analysis.get('ats_score')}/100",
+                styles["Heading2"]
+            )
         )
 
-    story.append(Spacer(1, 12))
+        story.append(Spacer(1, 12))
 
-    story.append(
-        Paragraph(
-            "<b>Weaknesses</b>",
-            styles["Heading2"]
-        )
-    )
+    # ---------- Summary ----------
 
-    for s in analysis["weaknesses"]:
+    if analysis.get("summary"):
+
         story.append(
-            Paragraph("• " + s, styles["BodyText"])
+            Paragraph(
+                "<b>Resume Summary</b>",
+                styles["Heading2"]
+            )
         )
 
-    story.append(Spacer(1, 12))
-
-    story.append(
-        Paragraph(
-            "<b>Recommended Roles</b>",
-            styles["Heading2"]
-        )
-    )
-
-    for s in analysis["recommended_roles"]:
         story.append(
-            Paragraph("• " + s, styles["BodyText"])
+            Paragraph(
+                analysis.get("summary"),
+                styles["BodyText"]
+            )
         )
 
-    story.append(Spacer(1, 12))
+        story.append(Spacer(1, 12))
 
-    story.append(
-        Paragraph(
-            "<b>Missing Skills</b>",
-            styles["Heading2"]
-        )
-    )
+    # ---------- Answer ----------
 
-    for s in analysis["missing_skills"]:
+    if analysis.get("answer"):
+
         story.append(
-            Paragraph("• " + s, styles["BodyText"])
+            Paragraph(
+                "<b>Answer</b>",
+                styles["Heading2"]
+            )
         )
 
-    story.append(Spacer(1, 12))
-
-    story.append(
-        Paragraph(
-            "<b>Interview Questions</b>",
-            styles["Heading2"]
-        )
-    )
-
-    for s in analysis["interview_questions"]:
         story.append(
-            Paragraph("• " + s, styles["BodyText"])
+            Paragraph(
+                analysis.get("answer"),
+                styles["BodyText"]
+            )
+        )
+
+        story.append(Spacer(1, 12))
+
+    # ---------- Helper ----------
+
+    def add_list(title, items):
+
+        if items:
+
+            story.append(
+                Paragraph(
+                    f"<b>{title}</b>",
+                    styles["Heading2"]
+                )
+            )
+
+            for item in items:
+
+                story.append(
+                    Paragraph(
+                        "• " + str(item),
+                        styles["BodyText"]
+                    )
+                )
+
+            story.append(Spacer(1, 12))
+
+    # ---------- Lists ----------
+
+    add_list("Skills", analysis.get("skills", []))
+    add_list("Missing Skills", analysis.get("missing_skills", []))
+    add_list("Strengths", analysis.get("strengths", []))
+    add_list("Weaknesses", analysis.get("weaknesses", []))
+    add_list("Recommended Roles", analysis.get("recommended_roles", []))
+    add_list("Interview Questions", analysis.get("interview_questions", []))
+    add_list("Resume Improvements", analysis.get("resume_improvements", []))
+    add_list("Certifications", analysis.get("certifications", []))
+    add_list("Projects", analysis.get("projects", []))
+    add_list("Suggestions", analysis.get("suggestions", []))
+    add_list("Matching Skills", analysis.get("matching_skills", []))
+
+    # ---------- Experience ----------
+
+    if analysis.get("experience"):
+
+        story.append(
+            Paragraph(
+                "<b>Experience</b>",
+                styles["Heading2"]
+            )
+        )
+
+        story.append(
+            Paragraph(
+                analysis.get("experience"),
+                styles["BodyText"]
+            )
         )
 
     doc.build(story)
