@@ -1,12 +1,15 @@
 import os
+import json
 import streamlit as st
+
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 
-# Load .env for local development
+from prompts import build_prompt, build_jd_prompt
+from ats import calculate_ats_score
+
 load_dotenv()
 
-# Read API key from Streamlit Secrets first, otherwise use .env
 groq_api_key = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
 
 llm = ChatGroq(
