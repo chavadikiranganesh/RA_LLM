@@ -1,0 +1,18 @@
+# Secrets
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Vector database
+vector_db/
+
+# Generated files
+Resume_Report.pdf
+
+# Uploaded PDFs
+pdfs/
