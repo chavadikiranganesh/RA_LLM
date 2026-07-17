@@ -8,22 +8,20 @@ from chatbot import ask_resume, compare_resume
 
 
 # ---------------- Page Config ---------------- #
-
 st.set_page_config(
-    page_title="AI Resume Analyzer",
-    page_icon="📄",
+    page_title="LLM-Powered Resume Analyzer using RAG",
+    page_icon="🤖",
     layout="wide"
 )
-
 # ---------------- Custom CSS ---------------- #
 
 st.markdown(load_css(), unsafe_allow_html=True)
 
 st.markdown(
     """
-    <div class="title">🤖 AI Resume Analyzer</div>
+    <div class="title">🤖 LLM-Powered Resume Analyzer using RAG</div>
     <div class="subtitle">
-        Upload your resume and get AI-powered career insights
+        Analyze resumes using Large Language Models (LLMs), Retrieval-Augmented Generation (RAG), and AI-powered career insights.
     </div>
     """,
     unsafe_allow_html=True,

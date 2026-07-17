@@ -1,21 +1,19 @@
-import json
-
+import os
+import streamlit as st
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 
-from prompts import build_prompt, build_jd_prompt
-from ats import calculate_ats_score
-
-# Load environment variables
+# Load .env for local development
 load_dotenv()
 
-# Initialize LLM
+# Read API key from Streamlit Secrets first, otherwise use .env
+groq_api_key = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
+
 llm = ChatGroq(
+    groq_api_key=groq_api_key,
     model_name="llama-3.3-70b-versatile",
     temperature=0
 )
-
-
 def ask_resume(question, vector_store):
     """
     Ask questions about the uploaded resume.
