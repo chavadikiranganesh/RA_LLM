@@ -38,9 +38,8 @@ llm = ChatGroq(
     temperature=0
 )
 
-
 # ---------------------------------------------------------
-# Helper Function
+# Helper Functions
 # ---------------------------------------------------------
 
 def clean_json_response(content: str):
@@ -63,6 +62,41 @@ def clean_json_response(content: str):
     return content
 
 
+def normalize_response(analysis):
+
+    list_fields = [
+        "skills",
+        "missing_skills",
+        "recommended_roles",
+        "interview_questions",
+        "resume_improvements",
+        "certifications",
+        "projects",
+        "matching_skills",
+        "strengths",
+        "weaknesses",
+        "suggestions"
+    ]
+
+    for field in list_fields:
+
+        value = analysis.get(field)
+
+        if value is None:
+
+            analysis[field] = []
+
+        elif isinstance(value, str):
+
+            analysis[field] = [value]
+
+        elif not isinstance(value, list):
+
+            analysis[field] = [str(value)]
+
+    return analysis
+
+
 # ---------------------------------------------------------
 # Resume Chat
 # ---------------------------------------------------------
@@ -74,8 +108,6 @@ def ask_resume(
     chat_history
 ):
 
-    # Retrieve relevant resume chunks
-
     docs = vector_store.similarity_search(
         question,
         k=4
@@ -86,68 +118,46 @@ def ask_resume(
         for doc in docs
     )
 
-    # Conversation history
-
     history = "\n".join(
         f"{role}: {message}"
         for role, message in chat_history[-6:]
     )
 
-    # ---------------- Prompt Routing ---------------- #
-
     if intent == "summary":
 
-        prompt = build_summary_prompt(
-            context
-        )
+        prompt = build_summary_prompt(context)
 
     elif intent == "ats":
 
-        prompt = build_ats_prompt(
-            context
-        )
+        prompt = build_ats_prompt(context)
 
     elif intent == "skills":
 
-        prompt = build_skills_prompt(
-            context
-        )
+        prompt = build_skills_prompt(context)
 
     elif intent == "roles":
 
-        prompt = build_roles_prompt(
-            context
-        )
+        prompt = build_roles_prompt(context)
 
     elif intent == "interview":
 
-        prompt = build_interview_prompt(
-            context
-        )
+        prompt = build_interview_prompt(context)
 
     elif intent == "improve":
 
-        prompt = build_improvement_prompt(
-            context
-        )
+        prompt = build_improvement_prompt(context)
 
     elif intent == "certifications":
 
-        prompt = build_cert_prompt(
-            context
-        )
+        prompt = build_cert_prompt(context)
 
     elif intent == "projects":
 
-        prompt = build_project_prompt(
-            context
-        )
+        prompt = build_project_prompt(context)
 
     elif intent == "experience":
 
-        prompt = build_experience_prompt(
-            context
-        )
+        prompt = build_experience_prompt(context)
 
     else:
 
@@ -156,8 +166,6 @@ def ask_resume(
             question,
             history
         )
-
-    # Invoke LLM
 
     response = llm.invoke(prompt)
 
@@ -175,7 +183,9 @@ def ask_resume(
             "answer": content
         }
 
-    # ATS Score
+    analysis = normalize_response(
+        analysis
+    )
 
     if intent == "ats":
 
@@ -190,7 +200,6 @@ def ask_resume(
 
 def compare_resume(vector_store, job_description):
 
-    # Retrieve the most relevant resume chunks
     docs = vector_store.similarity_search(
         job_description,
         k=5
@@ -201,13 +210,11 @@ def compare_resume(vector_store, job_description):
         for doc in docs
     )
 
-    # Build JD comparison prompt
     prompt = build_jd_prompt(
         context,
         job_description
     )
 
-    # Call LLM
     response = llm.invoke(prompt)
 
     content = clean_json_response(
@@ -230,14 +237,43 @@ def compare_resume(vector_store, job_description):
             "resume_improvements": []
         }
 
-    # Ensure all keys exist
+    analysis = normalize_response(
+        analysis
+    )
 
-    analysis.setdefault("match_score", 0)
-    analysis.setdefault("matching_skills", [])
-    analysis.setdefault("missing_skills", [])
-    analysis.setdefault("strengths", [])
-    analysis.setdefault("weaknesses", [])
-    analysis.setdefault("suggestions", [])
-    analysis.setdefault("resume_improvements", [])
+    analysis.setdefault(
+        "match_score",
+        0
+    )
+
+    analysis.setdefault(
+        "matching_skills",
+        []
+    )
+
+    analysis.setdefault(
+        "missing_skills",
+        []
+    )
+
+    analysis.setdefault(
+        "strengths",
+        []
+    )
+
+    analysis.setdefault(
+        "weaknesses",
+        []
+    )
+
+    analysis.setdefault(
+        "suggestions",
+        []
+    )
+
+    analysis.setdefault(
+        "resume_improvements",
+        []
+    )
 
     return analysis
