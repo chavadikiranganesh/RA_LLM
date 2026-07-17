@@ -220,3 +220,35 @@ def build_general_prompt(context, question, history):
         question=question,
         history=history
     )
+# ---------------- JD MATCHING ---------------- #
+
+JD_PROMPT = """
+You are an ATS Resume Evaluator.
+
+Compare the uploaded resume with the Job Description.
+
+Return ONLY JSON.
+
+{
+    "match_score": 0,
+    "matching_skills": [],
+    "missing_skills": [],
+    "strengths": [],
+    "weaknesses": [],
+    "suggestions": [],
+    "resume_improvements": []
+}
+
+Resume:
+{context}
+
+Job Description:
+{job_description}
+"""
+
+def build_jd_prompt(context, job_description):
+
+    return JD_PROMPT.format(
+        context=context,
+        job_description=job_description
+    )
