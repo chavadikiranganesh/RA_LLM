@@ -7,9 +7,9 @@ Using ONLY the uploaded resume, write a professional summary.
 
 Return ONLY JSON.
 
-{
+{{
     "summary":""
-}
+}}
 
 Resume:
 {context}
@@ -28,10 +28,10 @@ Evaluate ONLY the uploaded resume.
 
 Return ONLY JSON.
 
-{
+{{
     "ats_score":0,
     "reason":""
-}
+}}
 
 Resume:
 {context}
@@ -50,10 +50,10 @@ Identify the candidate's skills and missing skills.
 
 Return ONLY JSON.
 
-{
+{{
     "skills":[],
     "missing_skills":[]
-}
+}}
 
 Resume:
 {context}
@@ -72,9 +72,9 @@ Recommend suitable job roles.
 
 Return ONLY JSON.
 
-{
+{{
     "recommended_roles":[]
-}
+}}
 
 Resume:
 {context}
@@ -93,9 +93,9 @@ Generate interview questions from the resume.
 
 Return ONLY JSON.
 
-{
+{{
     "interview_questions":[]
-}
+}}
 
 Resume:
 {context}
@@ -114,9 +114,9 @@ Improve the uploaded resume.
 
 Return ONLY JSON.
 
-{
+{{
     "resume_improvements":[]
-}
+}}
 
 Resume:
 {context}
@@ -133,9 +133,9 @@ Suggest certifications based on the uploaded resume.
 
 Return ONLY JSON.
 
-{
+{{
     "certifications":[]
-}
+}}
 
 Resume:
 {context}
@@ -152,9 +152,9 @@ Analyze the projects in the resume.
 
 Return ONLY JSON.
 
-{
+{{
     "projects":[]
-}
+}}
 
 Resume:
 {context}
@@ -171,9 +171,9 @@ Analyze the work experience.
 
 Return ONLY JSON.
 
-{
+{{
     "experience":""
-}
+}}
 
 Resume:
 {context}
@@ -211,15 +211,22 @@ Instructions:
 - Do NOT invent information.
 - If the answer is not present in the resume, politely say so.
 - Keep the response concise and professional.
+
+Return ONLY JSON.
+
+{{
+    "answer":""
+}}
 """
 
 def build_general_prompt(context, question, history):
-
     return GENERAL_PROMPT.format(
         context=context,
         question=question,
         history=history
     )
+
+
 # ---------------- JD MATCHING ---------------- #
 
 JD_PROMPT = """
@@ -229,15 +236,15 @@ Compare the uploaded resume with the Job Description.
 
 Return ONLY JSON.
 
-{
-    "match_score": 0,
-    "matching_skills": [],
-    "missing_skills": [],
-    "strengths": [],
-    "weaknesses": [],
-    "suggestions": [],
-    "resume_improvements": []
-}
+{{
+    "match_score":0,
+    "matching_skills":[],
+    "missing_skills":[],
+    "strengths":[],
+    "weaknesses":[],
+    "suggestions":[],
+    "resume_improvements":[]
+}}
 
 Resume:
 {context}
@@ -247,7 +254,6 @@ Job Description:
 """
 
 def build_jd_prompt(context, job_description):
-
     return JD_PROMPT.format(
         context=context,
         job_description=job_description
