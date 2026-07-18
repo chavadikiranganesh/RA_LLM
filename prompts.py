@@ -181,7 +181,7 @@ STRICT RULES:
 - Return ONLY a paragraph.
 - Do NOT return JSON.
 - Do NOT return Python dictionaries.
-- Do NOT use curly braces {}.
+- Do NOT use curly braces.
 - Do NOT use lists or bullet points.
 - Mention:
   • Internship/company
