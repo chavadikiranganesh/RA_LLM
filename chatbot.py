@@ -108,10 +108,16 @@ def ask_resume(
     chat_history
 ):
 
-    docs = vector_store.similarity_search(
-        question,
-        k=10
-    )
+    if intent == "experience":
+        docs = vector_store.similarity_search(
+            question,
+            k=15
+        )
+    else:
+        docs = vector_store.similarity_search(
+            question,
+            k=10
+        )
 
     context = "\n\n".join(
         doc.page_content
@@ -124,43 +130,24 @@ def ask_resume(
     )
 
     if intent == "summary":
-
         prompt = build_summary_prompt(context)
-
     elif intent == "ats":
-
         prompt = build_ats_prompt(context)
-
     elif intent == "skills":
-
         prompt = build_skills_prompt(context)
-
     elif intent == "roles":
-
         prompt = build_roles_prompt(context)
-
     elif intent == "interview":
-
         prompt = build_interview_prompt(context)
-
     elif intent == "improve":
-
         prompt = build_improvement_prompt(context)
-
     elif intent == "certifications":
-
         prompt = build_cert_prompt(context)
-
     elif intent == "projects":
-
         prompt = build_project_prompt(context)
-
     elif intent == "experience":
-
         prompt = build_experience_prompt(context)
-
     else:
-
         prompt = build_general_prompt(
             context,
             question,
@@ -174,19 +161,16 @@ def ask_resume(
     )
 
     try:
-
         analysis = json.loads(content)
 
-    except Exception:
+    except json.JSONDecodeError:
 
         if intent == "experience":
-
             analysis = {
                 "experience": content
             }
 
         else:
-
             analysis = {
                 "answer": content
             }
@@ -196,7 +180,6 @@ def ask_resume(
     )
 
     if intent == "ats":
-
         analysis["ats_score"] = calculate_ats_score(
             context
         )
@@ -230,10 +213,9 @@ def compare_resume(vector_store, job_description):
     )
 
     try:
-
         analysis = json.loads(content)
 
-    except Exception:
+    except json.JSONDecodeError:
 
         analysis = {
             "match_score": 0,

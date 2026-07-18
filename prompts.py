@@ -155,6 +155,8 @@ For each project include:
 - One-line description
 - Technologies used (if available)
 
+Do NOT skip any project.
+
 Return ONLY valid JSON.
 
 {{
@@ -170,31 +172,26 @@ Resume:
 def build_project_prompt(context):
     return PROJECT_PROMPT.format(context=context)
 # ---------------- EXPERIENCE ---------------- #
-# ---------------- EXPERIENCE ---------------- #
-
 EXPERIENCE_PROMPT = """
-You are a professional resume writer.
+You are an expert resume reviewer.
 
-Using ONLY the resume, write a professional experience summary.
+Using ONLY the uploaded resume, write a professional experience summary.
 
-STRICT RULES:
-- Return ONLY a paragraph.
-- Do NOT return JSON.
-- Do NOT return Python dictionaries.
-- Do NOT use curly braces.
-- Do NOT use lists or bullet points.
-- Mention:
-  • Internship/company
-  • Duration
-  • Key responsibilities
-  • Important projects
-  • Technologies used
-- Keep the response between 100 and 150 words.
+Include:
+- Internship/company name
+- Duration
+- Main responsibilities
+- Key technologies used
+- Mention ALL major projects found in the resume with one short sentence each.
+
+Return ONLY plain English.
+Do NOT return JSON.
+Do NOT use markdown.
+Limit the response to about 120 words.
 
 Resume:
 {context}
 """
-
 def build_experience_prompt(context):
     return EXPERIENCE_PROMPT.format(context=context)
 # ---------------- GENERAL CHAT ---------------- #
