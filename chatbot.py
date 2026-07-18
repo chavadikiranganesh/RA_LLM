@@ -110,7 +110,7 @@ def ask_resume(
 
     docs = vector_store.similarity_search(
         question,
-        k=4
+        k=10
     )
 
     context = "\n\n".join(
