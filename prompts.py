@@ -170,15 +170,19 @@ Resume:
 def build_project_prompt(context):
     return PROJECT_PROMPT.format(context=context)
 # ---------------- EXPERIENCE ---------------- #
-
 EXPERIENCE_PROMPT = """
-Analyze the work experience.
+You are an expert resume reviewer.
 
-Return ONLY JSON.
+Analyze the candidate's work experience from the resume.
 
-{{
-    "experience":""
-}}
+Write a professional summary in plain English.
+
+Instructions:
+- Return ONLY plain text.
+- Do NOT return JSON.
+- Do NOT use markdown.
+- Mention internship/company, duration, key responsibilities, and important projects.
+- Keep the response concise (100-150 words).
 
 Resume:
 {context}
@@ -186,8 +190,6 @@ Resume:
 
 def build_experience_prompt(context):
     return EXPERIENCE_PROMPT.format(context=context)
-
-
 # ---------------- GENERAL CHAT ---------------- #
 
 GENERAL_PROMPT = """

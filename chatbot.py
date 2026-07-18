@@ -179,9 +179,17 @@ def ask_resume(
 
     except Exception:
 
-        analysis = {
-            "answer": content
-        }
+        if intent == "experience":
+
+            analysis = {
+                "experience": content
+            }
+
+        else:
+
+            analysis = {
+                "answer": content
+            }
 
     analysis = normalize_response(
         analysis
