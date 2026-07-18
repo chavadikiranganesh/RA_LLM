@@ -102,31 +102,29 @@ st.markdown(load_css(), unsafe_allow_html=True)
 # ==========================================================
 # Hero Section
 # ==========================================================
-
 st.markdown(
-    """
-    <div class="hero">
+"""
+<div class="hero">
 
-        <div class="title">
-            🤖 AI Resume Analyzer
-        </div>
+<div class="title">
+🤖 AI Resume Analyzer
+</div>
 
-        <div class="subtitle">
-            Powered by Llama 3.3 • LangChain • FAISS • HuggingFace
-        </div>
+<div class="subtitle">
+Powered by Llama 3.3 • LangChain • FAISS • HuggingFace
+</div>
 
-        <div class="hero-text">
-            Upload your resume and receive intelligent career insights,
-            ATS evaluation, resume improvements, interview preparation,
-            AI resume chat, and Job Description matching using
-            Retrieval-Augmented Generation (RAG).
-        </div>
+<div class="hero-text">
+Upload your resume and receive intelligent career insights,
+ATS evaluation, resume improvements, interview preparation,
+AI resume chat, and Job Description matching using
+Retrieval-Augmented Generation (RAG).
+</div>
 
-    </div>
-    """,
-    unsafe_allow_html=True
+</div>
+""",
+unsafe_allow_html=True
 )
-
 # ==========================================================
 # Feature Cards
 # ==========================================================

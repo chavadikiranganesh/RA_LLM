@@ -15,14 +15,12 @@ def load_css():
     /* ---------------- Hero ---------------- */
 
     .hero{
-        background:linear-gradient(135deg,#2563eb,#4f46e5);
-        border-radius:24px;
-        padding:40px;
-        text-align:center;
-        color:white;
-        margin-bottom:30px;
-        box-shadow:0 15px 35px rgba(0,0,0,.25);
-    }
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    border-radius:24px;
+    padding:40px;
+    text-align:center;
+    color:white;
+}
 
     .title{
         font-size:46px;
