@@ -190,8 +190,9 @@ if question:
 
                 assistant_reply = analysis.get("summary", "")
 
-                st.subheader("📄 Resume Summary")
-                st.write(assistant_reply)
+                with st.container(border=True):
+                    st.subheader("📄 Resume Summary")
+                    st.write(assistant_reply)
 
             # ---------------- ATS ---------------- #
 
@@ -201,16 +202,20 @@ if question:
 
                 assistant_reply = f"ATS Score : {score}/100"
 
-                st.metric(
-                    "📊 ATS Score",
-                    f"{score}/100"
-                )
+                with st.container(border=True):
 
-                st.progress(score / 100)
+                    st.subheader("🎯 ATS Score")
 
-                st.write(
-                    analysis.get("reason", "")
-                )
+                    st.metric(
+                        "Overall Score",
+                        f"{score}/100"
+                    )
+
+                    st.progress(score / 100)
+
+                    st.write(
+                        analysis.get("reason", "")
+                    )
 
             # ---------------- ROLES ---------------- #
 
@@ -230,24 +235,26 @@ if question:
                 else:
                     assistant_reply = str(roles)
 
-                st.subheader("💼 Recommended Roles")
+                with st.container(border=True):
 
-                if isinstance(roles, list):
-                    if roles:
-                        for role in roles:
-                            st.success(role)
+                    st.subheader("💼 Recommended Roles")
+
+                    if isinstance(roles, list):
+                        if roles:
+                            for role in roles:
+                                st.success(role)
+                        else:
+                            st.info("No suitable roles found.")
+
+                    elif isinstance(roles, str):
+                        st.success(roles)
+
+                    elif isinstance(roles, dict):
+                        for k, v in roles.items():
+                            st.success(f"{k}: {v}")
+
                     else:
-                        st.info("No suitable roles found.")
-
-                elif isinstance(roles, str):
-                    st.success(roles)
-
-                elif isinstance(roles, dict):
-                    for k, v in roles.items():
-                        st.success(f"{k}: {v}")
-
-                else:
-                    st.success(str(roles))
+                        st.success(str(roles))
 
 
             elif intent == "skills":
@@ -257,33 +264,37 @@ if question:
 
                 assistant_reply = format_response(skills)
 
-                col1, col2 = st.columns(2)
+                with st.container(border=True):
 
-                with col1:
+                    st.subheader("💻 Skills Analysis")
 
-                    st.subheader("✅ Skills")
+                    col1, col2 = st.columns(2)
 
-                    if isinstance(skills, list):
-                        if skills:
-                            for skill in skills:
-                                st.success(skill)
+                    with col1:
+
+                        st.subheader("✅ Skills")
+
+                        if isinstance(skills, list):
+                            if skills:
+                                for skill in skills:
+                                    st.success(skill)
+                            else:
+                                st.info("No skills found.")
                         else:
-                            st.info("No skills found.")
-                    else:
-                        st.success(format_response(skills))
+                            st.success(format_response(skills))
 
-                with col2:
+                    with col2:
 
-                    st.subheader("⚠ Missing Skills")
+                        st.subheader("⚠ Missing Skills")
 
-                    if isinstance(missing, list):
-                        if missing:
-                            for skill in missing:
-                                st.warning(skill)
+                        if isinstance(missing, list):
+                            if missing:
+                                for skill in missing:
+                                    st.warning(skill)
+                            else:
+                                st.info("No missing skills found.")
                         else:
-                            st.info("No missing skills found.")
-                    else:
-                        st.warning(format_response(missing))
+                            st.warning(format_response(missing))
 
 
             elif intent == "interview":
@@ -295,16 +306,18 @@ if question:
 
                 assistant_reply = format_response(questions)
 
-                st.subheader("🎤 Interview Questions")
+                with st.container(border=True):
 
-                if isinstance(questions, list):
-                    if questions:
-                        for q in questions:
-                            st.info(q)
+                    st.subheader("🎤 Interview Questions")
+
+                    if isinstance(questions, list):
+                        if questions:
+                            for q in questions:
+                                st.info(q)
+                        else:
+                            st.info("No interview questions generated.")
                     else:
-                        st.info("No interview questions generated.")
-                else:
-                    st.info(format_response(questions))
+                        st.info(format_response(questions))
 
 
             elif intent == "improve":
@@ -313,24 +326,26 @@ if question:
 
                 assistant_reply = format_response(improvements)
 
-                st.subheader("📝 Resume Improvements")
+                with st.container(border=True):
 
-                if isinstance(improvements, list):
-                    if improvements:
-                        for tip in improvements:
-                            st.success(tip)
+                    st.subheader("📝 Resume Improvements")
+
+                    if isinstance(improvements, list):
+                        if improvements:
+                            for tip in improvements:
+                                st.success(tip)
+                        else:
+                            st.info("No resume improvements found.")
+
+                    elif isinstance(improvements, str):
+                        st.success(improvements)
+
+                    elif isinstance(improvements, dict):
+                        for key, value in improvements.items():
+                            st.success(f"{key}: {value}")
+
                     else:
-                        st.info("No resume improvements found.")
-
-                elif isinstance(improvements, str):
-                    st.success(improvements)
-
-                elif isinstance(improvements, dict):
-                    for key, value in improvements.items():
-                        st.success(f"{key}: {value}")
-
-                else:
-                    st.success(str(improvements))
+                        st.success(str(improvements))
 
 
             elif intent == "certifications":
@@ -342,17 +357,19 @@ if question:
 
                 assistant_reply = format_response(certs)
 
-                st.subheader("📚 Recommended Certifications")
+                with st.container(border=True):
 
-                if isinstance(certs, list):
-                    if certs:
-                        for cert in certs:
-                            st.info(cert)
+                    st.subheader("📚 Recommended Certifications")
+
+                    if isinstance(certs, list):
+                        if certs:
+                            for cert in certs:
+                                st.info(cert)
+                        else:
+                            st.info("No certifications suggested.")
+
                     else:
-                        st.info("No certifications suggested.")
-
-                else:
-                    st.info(format_response(certs))
+                        st.info(format_response(certs))
 
 
             # ---------------- PROJECTS ---------------- #
@@ -373,51 +390,53 @@ if question:
                 else:
                     assistant_reply = str(projects)
 
-                st.subheader("📂 Projects")
+                with st.container(border=True):
 
-                if isinstance(projects, list):
+                    st.subheader("📂 Projects")
 
-                    if projects:
+                    if isinstance(projects, list):
 
-                        for project in projects:
+                        if projects:
 
-                            if isinstance(project, dict):
+                            for project in projects:
 
-                                st.success(f"📂 {project.get('project_name', 'Project')}")
+                                if isinstance(project, dict):
 
-                                st.write(
-                                    f"**Description:** {project.get('description', 'Not available')}"
-                                )
+                                    st.success(f"📂 {project.get('project_name', 'Project')}")
 
-                                st.caption(
-                                    f"Technologies: {project.get('technologies', 'Not available')}"
-                                )
+                                    st.write(
+                                        f"**Description:** {project.get('description', 'Not available')}"
+                                    )
 
-                                st.divider()
+                                    st.caption(
+                                        f"Technologies: {project.get('technologies', 'Not available')}"
+                                    )
 
-                            else:
+                                    st.divider()
 
-                                st.success(project)
+                                else:
+
+                                    st.success(project)
+
+                        else:
+
+                            st.info("No projects found.")
+
+                    elif isinstance(projects, dict):
+
+                        st.success(f"📂 {projects.get('Project Name','Project')}")
+
+                        st.write(
+                            f"**Description:** {projects.get('One-line description','Not available')}"
+                        )
+
+                        st.caption(
+                            f"Technologies: {projects.get('Technologies used','Not available')}"
+                        )
 
                     else:
 
-                        st.info("No projects found.")
-
-                elif isinstance(projects, dict):
-
-                    st.success(f"📂 {projects.get('Project Name','Project')}")
-
-                    st.write(
-                        f"**Description:** {projects.get('One-line description','Not available')}"
-                    )
-
-                    st.caption(
-                        f"Technologies: {projects.get('Technologies used','Not available')}"
-                    )
-
-                else:
-
-                    st.success(format_response(projects))
+                        st.success(format_response(projects))
 
 
             # ---------------- EXPERIENCE ---------------- #
@@ -429,9 +448,11 @@ if question:
                     ""
                 )
 
-                st.subheader("💼 Experience")
+                with st.container(border=True):
 
-                st.write(assistant_reply)
+                    st.subheader("💼 Experience")
+
+                    st.write(assistant_reply)
 
             # ---------------- GENERAL ---------------- #
 
