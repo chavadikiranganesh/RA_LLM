@@ -181,8 +181,11 @@ if question:
 
         with st.chat_message("assistant"):
 
-            # ---------------- SUMMARY ---------------- #
+            if "answer" in analysis and intent != "general":
+                assistant_reply = analysis["answer"]
+                st.warning(assistant_reply)
 
+            # ---------------- SUMMARY ---------------- #
             if intent == "summary":
 
                 assistant_reply = analysis.get("summary", "")
@@ -373,25 +376,48 @@ if question:
                 st.subheader("📂 Projects")
 
                 if isinstance(projects, list):
+
                     if projects:
+
                         for project in projects:
+
                             if isinstance(project, dict):
-                                st.success(project.get("project_name", ""))
-                                st.write(project.get("description", ""))
-                                st.caption(
-                                    f"Technologies: {project.get('technologies', '')}"
+
+                                st.success(f"📂 {project.get('project_name', 'Project')}")
+
+                                st.write(
+                                    f"**Description:** {project.get('description', 'Not available')}"
                                 )
+
+                                st.caption(
+                                    f"Technologies: {project.get('technologies', 'Not available')}"
+                                )
+
+                                st.divider()
+
                             else:
-                                st.success(str(project))
+
+                                st.success(project)
+
                     else:
+
                         st.info("No projects found.")
-                elif isinstance(projects, str):
-                    st.success(projects)
+
                 elif isinstance(projects, dict):
-                    for k, v in projects.items():
-                        st.success(f"{k}: {v}")
+
+                    st.success(f"📂 {projects.get('Project Name','Project')}")
+
+                    st.write(
+                        f"**Description:** {projects.get('One-line description','Not available')}"
+                    )
+
+                    st.caption(
+                        f"Technologies: {projects.get('Technologies used','Not available')}"
+                    )
+
                 else:
-                    st.success(str(projects))
+
+                    st.success(format_response(projects))
 
 
             # ---------------- EXPERIENCE ---------------- #

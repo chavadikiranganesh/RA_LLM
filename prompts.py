@@ -302,6 +302,10 @@ Return ONLY JSON.
     "resume_improvements":[]
 }}
 
+Rules:
+- Return match_score as an INTEGER between 0 and 100.
+- Do NOT return decimals like 0.75.
+
 Resume:
 {context}
 

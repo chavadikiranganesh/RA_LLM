@@ -161,18 +161,28 @@ def ask_resume(
     )
 
     try:
+
         analysis = json.loads(content)
 
     except json.JSONDecodeError:
 
         if intent == "experience":
+
             analysis = {
                 "experience": content
             }
 
-        else:
+        elif intent == "general":
+
             analysis = {
                 "answer": content
+            }
+
+        else:
+
+            analysis = {
+                "answer":
+                "⚠ Sorry, I couldn't analyze this request. Please try again."
             }
 
     analysis = normalize_response(
@@ -240,51 +250,16 @@ def compare_resume(vector_store, job_description):
             "resume_improvements": []
         }
 
-    analysis = normalize_response(
-        analysis
-    )
-
     score = analysis.get("match_score", 0)
 
-    # Convert decimal to percentage if needed
+    # Convert decimal (0-1) to percentage (0-100)
     if isinstance(score, (int, float)) and score <= 1:
         score = int(score * 100)
 
     analysis["match_score"] = score
 
-    analysis.setdefault(
-        "match_score",
-        0
-    )
-
-    analysis.setdefault(
-        "matching_skills",
-        []
-    )
-
-    analysis.setdefault(
-        "missing_skills",
-        []
-    )
-
-    analysis.setdefault(
-        "strengths",
-        []
-    )
-
-    analysis.setdefault(
-        "weaknesses",
-        []
-    )
-
-    analysis.setdefault(
-        "suggestions",
-        []
-    )
-
-    analysis.setdefault(
-        "resume_improvements",
-        []
+    analysis = normalize_response(
+        analysis
     )
 
     return analysis
