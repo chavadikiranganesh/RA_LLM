@@ -111,13 +111,24 @@ def build_interview_prompt(context):
 IMPROVEMENT_PROMPT = """
 You are an ATS resume expert.
 
-Improve the uploaded resume.
+Analyze the uploaded resume and provide practical improvements.
 
-Return ONLY JSON.
+Return ONLY valid JSON.
 
 {{
-    "resume_improvements":[]
+    "resume_improvements": [
+        "Improve the professional summary.",
+        "Add measurable achievements.",
+        "Include more ATS keywords."
+    ]
 }}
+
+Rules:
+- Return ONLY valid JSON.
+- resume_improvements MUST be a list of strings.
+- Do NOT return dictionaries.
+- Do NOT return nested JSON.
+- Do NOT include markdown.
 
 Resume:
 {context}

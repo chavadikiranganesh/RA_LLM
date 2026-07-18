@@ -256,12 +256,38 @@ if question:
                     []
                 )
 
-                assistant_reply = "\n".join(improvements)
+                if isinstance(improvements, list):
+                    assistant_reply = "\n".join(
+                        str(item) for item in improvements
+                    )
+
+                elif isinstance(improvements, str):
+                    assistant_reply = improvements
+
+                elif isinstance(improvements, dict):
+                    assistant_reply = "\n".join(
+                        f"{key}: {value}"
+                        for key, value in improvements.items()
+                    )
+
+                else:
+                    assistant_reply = str(improvements)
 
                 st.subheader("📝 Resume Improvements")
 
-                for tip in improvements:
-                    st.success(tip)
+                if isinstance(improvements, list):
+                    for tip in improvements:
+                        st.success(tip)
+
+                elif isinstance(improvements, str):
+                    st.success(improvements)
+
+                elif isinstance(improvements, dict):
+                    for key, value in improvements.items():
+                        st.success(f"{key}: {value}")
+
+                else:
+                    st.success(str(improvements))
 
             # ---------------- CERTIFICATIONS ---------------- #
 

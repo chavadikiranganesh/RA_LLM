@@ -108,7 +108,7 @@ def ask_resume(
     chat_history
 ):
 
-    if intent == "experience":
+    if intent in ["experience", "general"]:
         docs = vector_store.similarity_search(
             question,
             k=15

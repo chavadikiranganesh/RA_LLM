@@ -32,10 +32,68 @@ Classify the user's question into EXACTLY ONE of these categories:
 - experience
 - general
 
+Intent definitions:
+
+summary:
+- Resume summary
+- Profile summary
+- About the candidate
+
+ats:
+- ATS score
+- ATS evaluation
+- Resume score
+
+skills:
+- Explicit requests to list skills
+- Technical skills
+- Soft skills
+- Missing skills
+
+roles:
+- Suitable job roles
+- Career suggestions
+- Recommended positions
+
+interview:
+- Interview questions
+- Mock interview
+
+improve:
+- Resume improvement
+- Resume suggestions
+- Resume feedback
+
+certifications:
+- Certifications
+- Courses
+- Licenses
+
+projects:
+- List projects
+- Explain projects
+- Project details
+
+experience:
+- Internship
+- Work experience
+- Professional experience
+
+general:
+- Any other question about the resume.
+- Questions like:
+  • Which databases do I know?
+  • Which ML algorithms have I used?
+  • Which programming languages do I know?
+  • Which frameworks have I used?
+  • What technologies did I use there?
+  • Follow-up questions referring to previous answers.
+  • Any question asking for specific information from the resume.
+
 Rules:
 - Return ONLY one category.
-- Do not explain your answer.
-- Do not return punctuation or extra text.
+- Do NOT explain.
+- Return ONLY the category name.
 - If unsure, return "general".
 
 Question:
