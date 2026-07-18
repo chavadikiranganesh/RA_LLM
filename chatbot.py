@@ -163,6 +163,8 @@ def ask_resume(
     try:
 
         analysis = json.loads(content)
+        if intent == "general" and isinstance(analysis.get("answer"), str):
+            analysis["answer"] = analysis["answer"].strip()
 
     except json.JSONDecodeError:
 
