@@ -89,7 +89,7 @@ Rules:
 
 Return ONLY:
 
-{
+{{
     "recommended_roles": [
         "Role 1",
         "Role 2",
@@ -97,14 +97,18 @@ Return ONLY:
         "Role 4",
         "Role 5"
     ]
-}
+}}
 
 Resume:
 {context}
 """
 
 def build_roles_prompt(context):
-    return ROLE_PROMPT.format(context=context)
+    try:
+        return ROLE_PROMPT.format(context=context)
+    except Exception as e:
+        print("FORMAT ERROR:", repr(e))
+        raise
 
 
 # ---------------- INTERVIEW ---------------- #
