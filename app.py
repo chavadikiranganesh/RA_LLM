@@ -95,25 +95,82 @@ st.set_page_config(
 
 
 # ---------------- Custom CSS ---------------- #
+# ---------------- Custom CSS ---------------- #
 
 st.markdown(load_css(), unsafe_allow_html=True)
 
+# ==========================================================
+# Hero Section
+# ==========================================================
+
 st.markdown(
     """
-    <div class="title">
-        🤖 LLM-Powered Resume Analyzer using RAG
-    </div>
+    <div class="hero">
 
-    <div class="subtitle">
-        Analyze resumes using Large Language Models (LLMs),
-        Retrieval-Augmented Generation (RAG),
-        and AI-powered career insights.
+        <div class="title">
+            🤖 AI Resume Analyzer
+        </div>
+
+        <div class="subtitle">
+            Powered by Llama 3.3 • LangChain • FAISS • HuggingFace
+        </div>
+
+        <div class="hero-text">
+            Upload your resume and receive intelligent career insights,
+            ATS evaluation, resume improvements, interview preparation,
+            AI resume chat, and Job Description matching using
+            Retrieval-Augmented Generation (RAG).
+        </div>
+
     </div>
     """,
     unsafe_allow_html=True
 )
 
+# ==========================================================
+# Feature Cards
+# ==========================================================
 
+st.markdown(
+"""
+<div class="feature-grid">
+
+<div class="feature-card">
+<div class="feature-icon">📄</div>
+<div class="feature-title">Resume Summary</div>
+<div class="feature-text">
+Generate an AI-powered summary of your resume instantly.
+</div>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">🎯</div>
+<div class="feature-title">ATS Score</div>
+<div class="feature-text">
+Evaluate resume quality and ATS compatibility.
+</div>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">💼</div>
+<div class="feature-title">JD Matching</div>
+<div class="feature-text">
+Compare your resume against any Job Description.
+</div>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">🤖</div>
+<div class="feature-title">AI Resume Chat</div>
+<div class="feature-text">
+Ask anything about your resume using RAG.
+</div>
+</div>
+
+</div>
+""",
+unsafe_allow_html=True
+)
 # ---------------- Session State ---------------- #
 
 if "messages" not in st.session_state:
@@ -127,10 +184,11 @@ if "chat_history" not in st.session_state:
 
 
 # ---------------- Sidebar ---------------- #
-
 with st.sidebar:
 
-    st.header("📂 Upload Resume")
+    st.markdown("## 📂 Resume")
+
+    st.caption("Upload your resume to unlock AI analysis.")
 
     uploaded_file = st.file_uploader(
         "Choose a PDF Resume",
@@ -139,10 +197,8 @@ with st.sidebar:
 
     if uploaded_file is not None:
 
-        with st.spinner("📄 Processing Resume..."):
-            st.session_state.vector_store = process_pdf(
-                uploaded_file
-            )
+        with st.spinner("📄 Reading Resume..."):
+            st.session_state.vector_store = process_pdf(uploaded_file)
 
         st.session_state.messages = []
         st.session_state.chat_history = []
@@ -151,7 +207,7 @@ with st.sidebar:
 
     st.divider()
 
-    st.subheader("💼 Job Description")
+    st.markdown("## 💼 Job Description")
 
     job_description = st.text_area(
         "Paste Job Description",
@@ -160,18 +216,33 @@ with st.sidebar:
 
     st.divider()
 
-    st.subheader("💡 Example Questions")
+    st.markdown("## 💡 Quick Questions")
 
-    st.markdown("""
+    st.markdown(
+    """
 - 📄 Summarize my resume
 - ⭐ ATS Score
-- 💼 Which job suits me?
-- 🎤 Generate interview questions
-- 📝 Improve my resume
-- 📚 Recommend certifications
+- 💻 Technical Skills
+- 💼 Recommended Roles
+- 🎤 Interview Questions
 - 📂 Explain my projects
-- 💻 What are my technical skills?
-- 📈 Do I qualify for a Data Engineer role?
+- 📚 Certifications
+- 🎯 Resume vs Job Description
+"""
+    )
+
+    st.divider()
+
+    st.markdown("### ⚡ Powered By")
+
+    st.markdown("""
+🤖 Groq
+
+🦜 LangChain
+
+📚 HuggingFace
+
+⚡ FAISS
 """)
 
     st.divider()
@@ -182,15 +253,29 @@ with st.sidebar:
         st.session_state.chat_history = []
 
         st.rerun()
-
-
 # ---------------- Welcome ---------------- #
 
-if st.session_state.vector_store is None:
+st.markdown("""
 
-    st.info(
-        "👈 Upload your resume from the sidebar to start chatting."
-    )
+# 👋 Welcome
+
+Upload your resume to get
+
+✅ AI Resume Summary
+
+✅ ATS Score
+
+✅ Technical Skills
+
+✅ Resume Improvements
+
+✅ Interview Questions
+
+✅ AI Resume Chat
+
+✅ Resume vs Job Description Matching
+
+""")
 
 
 # ---------------- Chat History ---------------- #
@@ -202,7 +287,9 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 # ---------------- Chat ---------------- #
 
-question = st.chat_input("Ask anything about your resume...")
+question = st.chat_input(
+    "💬 Ask about skills, ATS, projects, experience or interview preparation..."
+)
 
 if question:
 
@@ -228,7 +315,9 @@ if question:
             st.markdown(question)
 
         # Get AI response
-        with st.spinner("🤖 AI is analyzing your resume..."):
+       with st.spinner(
+    "🤖 Reading Resume • Retrieving Knowledge • Generating AI Response..."
+):
 
             analysis, docs = ask_resume(
                 question,
@@ -508,19 +597,19 @@ if question:
             st.divider()
 
             pdf_file = create_pdf(analysis)
-
             with open(pdf_file, "rb") as file:
 
                 st.download_button(
-                    "⬇ Download Report",
-                    file,
-                    "Resume_Report.pdf",
-                    "application/pdf"
+                    label="📥 Download AI Resume Report",
+                    data=file,
+                    file_name="Resume_Report.pdf",
+                    mime="application/pdf",
+                    use_container_width=True
                 )
 
             st.divider()
 
-            with st.expander("📄 Retrieved Resume Chunks"):
+            with st.expander("🔍 Retrieved Resume Context (RAG)", expanded=False):
 
                 for i, doc in enumerate(
                     docs,
@@ -531,9 +620,9 @@ if question:
                     st.write(doc.page_content)
                     st.divider()
 
-        # Save messages
+                # Save messages
 
-        st.session_state.messages.append(
+            st.session_state.messages.append(
             {
                 "role": "assistant",
                 "content": assistant_reply
@@ -542,14 +631,14 @@ if question:
 
         # Save conversation memory
 
-        st.session_state.chat_history.append(
+            st.session_state.chat_history.append(
             (
                 "Human",
                 question
             )
         )
 
-        st.session_state.chat_history.append(
+            st.session_state.chat_history.append(
             (
                 "AI",
                 assistant_reply
@@ -563,8 +652,12 @@ if question:
 st.divider()
 
 st.header("🎯 Resume vs Job Description Matching")
+st.caption("Compare your resume with any Job Description using AI.")
 
-if st.button("Compare Resume with JD"):
+if st.button(
+    "🚀 Compare Resume with Job Description",
+    use_container_width=True
+):
 
     if st.session_state.vector_store is None:
 
@@ -577,7 +670,7 @@ if st.button("Compare Resume with JD"):
     else:
 
         with st.spinner(
-            "Comparing Resume with Job Description..."
+            "🔍 Reading Resume • Comparing Skills • Calculating Match Score..."
         ):
 
             jd_analysis = compare_resume(
@@ -587,22 +680,24 @@ if st.button("Compare Resume with JD"):
 
         st.success("Comparison Complete!")
 
-        st.metric(
-            "Match Score",
-            f"{jd_analysis['match_score']}%"
-        )
+        with st.container(border=True):
 
-        st.progress(
-            jd_analysis["match_score"] / 100
-        )
+            st.subheader("🎯 Overall Match Score")
+
+            st.metric(
+                "Resume Match",
+                f"{jd_analysis['match_score']}%"
+            )
+
+            st.progress(
+                jd_analysis["match_score"] / 100
+            )
 
         st.subheader("✅ Matching Skills")
-
         matching = jd_analysis.get("matching_skills", [])
 
         if matching:
-            for skill in matching:
-                st.success(skill)
+            display_chips(weaknesses)
         else:
             st.info("No matching skills found.")
 
@@ -642,7 +737,7 @@ if st.button("Compare Resume with JD"):
 
         if suggestions:
             for suggestion in suggestions:
-                st.info(suggestion)
+                st.markdown(f"✅ {suggestion}")
         else:
             st.info("No suggestions found.")
 
@@ -652,6 +747,29 @@ if st.button("Compare Resume with JD"):
 
         if improvements:
             for improvement in improvements:
-                st.success(improvement)
+                st.markdown(f"✔ {improvement}")
         else:
             st.info("No resume improvements found.")
+
+st.markdown("---")
+
+st.markdown(
+    """
+<div class="footer">
+
+Built with ❤️ using
+
+<b>Streamlit</b> •
+<b>Groq</b> •
+<b>LangChain</b> •
+<b>FAISS</b> •
+<b>HuggingFace</b>
+
+<br><br>
+
+© 2026 Chavadi Kiran Ganesh
+
+</div>
+""",
+unsafe_allow_html=True
+)
