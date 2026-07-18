@@ -8,6 +8,25 @@ from chatbot import ask_resume, compare_resume
 from intent import detect_intent
 
 
+def format_response(value):
+    """
+    Convert any response into a displayable string.
+    """
+
+    if value is None:
+        return ""
+
+    if isinstance(value, list):
+        return "\n".join(str(item) for item in value)
+
+    if isinstance(value, dict):
+        return "\n".join(
+            f"{k}: {v}" for k, v in value.items()
+        )
+
+    return str(value)
+
+
 # ---------------- Page Config ---------------- #
 
 st.set_page_config(
@@ -137,7 +156,7 @@ if question:
 
         # Detect intent
         intent = detect_intent(question)
-        st.write("Detected Intent:", intent)
+        # st.write("Detected Intent:", intent)
 
         # Save user message
         st.session_state.messages.append(
@@ -197,17 +216,13 @@ if question:
                 roles = analysis.get("recommended_roles", [])
 
                 if isinstance(roles, list):
-                    assistant_reply = "\n".join(
-                        str(role) for role in roles
-                    )
+                    assistant_reply = format_response(roles)
 
                 elif isinstance(roles, str):
                     assistant_reply = roles
 
                 elif isinstance(roles, dict):
-                    assistant_reply = "\n".join(
-                        f"{k}: {v}" for k, v in roles.items()
-                    )
+                    assistant_reply = format_response(roles)
 
                 else:
                     assistant_reply = str(roles)
@@ -215,8 +230,11 @@ if question:
                 st.subheader("💼 Recommended Roles")
 
                 if isinstance(roles, list):
-                    for role in roles:
-                        st.success(role)
+                    if roles:
+                        for role in roles:
+                            st.success(role)
+                    else:
+                        st.info("No suitable roles found.")
 
                 elif isinstance(roles, str):
                     st.success(roles)
@@ -228,14 +246,13 @@ if question:
                 else:
                     st.success(str(roles))
 
-            # ---------------- SKILLS ---------------- #
 
             elif intent == "skills":
 
                 skills = analysis.get("skills", [])
                 missing = analysis.get("missing_skills", [])
 
-                assistant_reply = "\n".join(skills)
+                assistant_reply = format_response(skills)
 
                 col1, col2 = st.columns(2)
 
@@ -243,17 +260,28 @@ if question:
 
                     st.subheader("✅ Skills")
 
-                    for skill in skills:
-                        st.success(skill)
+                    if isinstance(skills, list):
+                        if skills:
+                            for skill in skills:
+                                st.success(skill)
+                        else:
+                            st.info("No skills found.")
+                    else:
+                        st.success(format_response(skills))
 
                 with col2:
 
                     st.subheader("⚠ Missing Skills")
 
-                    for skill in missing:
-                        st.warning(skill)
+                    if isinstance(missing, list):
+                        if missing:
+                            for skill in missing:
+                                st.warning(skill)
+                        else:
+                            st.info("No missing skills found.")
+                    else:
+                        st.warning(format_response(missing))
 
-            # ---------------- INTERVIEW ---------------- #
 
             elif intent == "interview":
 
@@ -262,44 +290,34 @@ if question:
                     []
                 )
 
-                assistant_reply = "\n".join(questions)
+                assistant_reply = format_response(questions)
 
                 st.subheader("🎤 Interview Questions")
 
-                for q in questions:
-                    st.info(q)
+                if isinstance(questions, list):
+                    if questions:
+                        for q in questions:
+                            st.info(q)
+                    else:
+                        st.info("No interview questions generated.")
+                else:
+                    st.info(format_response(questions))
 
-            # ---------------- IMPROVEMENTS ---------------- #
 
             elif intent == "improve":
 
-                improvements = analysis.get(
-                    "resume_improvements",
-                    []
-                )
+                improvements = analysis.get("resume_improvements", [])
 
-                if isinstance(improvements, list):
-                    assistant_reply = "\n".join(
-                        str(item) for item in improvements
-                    )
-
-                elif isinstance(improvements, str):
-                    assistant_reply = improvements
-
-                elif isinstance(improvements, dict):
-                    assistant_reply = "\n".join(
-                        f"{key}: {value}"
-                        for key, value in improvements.items()
-                    )
-
-                else:
-                    assistant_reply = str(improvements)
+                assistant_reply = format_response(improvements)
 
                 st.subheader("📝 Resume Improvements")
 
                 if isinstance(improvements, list):
-                    for tip in improvements:
-                        st.success(tip)
+                    if improvements:
+                        for tip in improvements:
+                            st.success(tip)
+                    else:
+                        st.info("No resume improvements found.")
 
                 elif isinstance(improvements, str):
                     st.success(improvements)
@@ -311,7 +329,6 @@ if question:
                 else:
                     st.success(str(improvements))
 
-            # ---------------- CERTIFICATIONS ---------------- #
 
             elif intent == "certifications":
 
@@ -320,28 +337,55 @@ if question:
                     []
                 )
 
-                assistant_reply = "\n".join(certs)
+                assistant_reply = format_response(certs)
 
                 st.subheader("📚 Recommended Certifications")
 
-                for cert in certs:
-                    st.info(cert)
+                if isinstance(certs, list):
+                    if certs:
+                        for cert in certs:
+                            st.info(cert)
+                    else:
+                        st.info("No certifications suggested.")
+
+                else:
+                    st.info(format_response(certs))
+
 
             # ---------------- PROJECTS ---------------- #
 
             elif intent == "projects":
 
-                projects = analysis.get(
-                    "projects",
-                    []
-                )
+                projects = analysis.get("projects", [])
 
-                assistant_reply = "\n".join(projects)
+                if isinstance(projects, list):
+                    assistant_reply = format_response(projects)
+
+                elif isinstance(projects, str):
+                    assistant_reply = projects
+
+                elif isinstance(projects, dict):
+                    assistant_reply = format_response(projects)
+
+                else:
+                    assistant_reply = str(projects)
 
                 st.subheader("📂 Projects")
 
-                for project in projects:
-                    st.success(project)
+                if isinstance(projects, list):
+                    if projects:
+                        for project in projects:
+                            st.success(project)
+                    else:
+                        st.info("No projects found.")
+                elif isinstance(projects, str):
+                    st.success(projects)
+                elif isinstance(projects, dict):
+                    for k, v in projects.items():
+                        st.success(f"{k}: {v}")
+                else:
+                    st.success(str(projects))
+
 
             # ---------------- EXPERIENCE ---------------- #
 
@@ -460,48 +504,60 @@ if st.button("Compare Resume with JD"):
 
         st.subheader("✅ Matching Skills")
 
-        for skill in jd_analysis.get(
-            "matching_skills",
-            []
-        ):
-            st.success(skill)
+        matching = jd_analysis.get("matching_skills", [])
+
+        if matching:
+            for skill in matching:
+                st.success(skill)
+        else:
+            st.info("No matching skills found.")
 
         st.subheader("❌ Missing Skills")
 
-        for skill in jd_analysis.get(
-            "missing_skills",
-            []
-        ):
-            st.error(skill)
+        missing = jd_analysis.get("missing_skills", [])
+
+        if missing:
+            for skill in missing:
+                st.error(skill)
+        else:
+            st.info("No missing skills found.")
 
         st.subheader("💪 Strengths")
 
-        for strength in jd_analysis.get(
-            "strengths",
-            []
-        ):
-            st.success(strength)
+        strengths = jd_analysis.get("strengths", [])
+
+        if strengths:
+            for strength in strengths:
+                st.success(strength)
+        else:
+            st.info("No strengths found.")
 
         st.subheader("⚠ Weaknesses")
 
-        for weakness in jd_analysis.get(
-            "weaknesses",
-            []
-        ):
-            st.warning(weakness)
+        weaknesses = jd_analysis.get("weaknesses", [])
+
+        if weaknesses:
+            for weakness in weaknesses:
+                st.warning(weakness)
+        else:
+            st.info("No weaknesses found.")
 
         st.subheader("💡 Suggestions")
 
-        for suggestion in jd_analysis.get(
-            "suggestions",
-            []
-        ):
-            st.info(suggestion)
+        suggestions = jd_analysis.get("suggestions", [])
+
+        if suggestions:
+            for suggestion in suggestions:
+                st.info(suggestion)
+        else:
+            st.info("No suggestions found.")
 
         st.subheader("📝 Resume Improvements")
 
-        for improvement in jd_analysis.get(
-            "resume_improvements",
-            []
-        ):
-            st.success(improvement)
+        improvements = jd_analysis.get("resume_improvements", [])
+
+        if improvements:
+            for improvement in improvements:
+                st.success(improvement)
+        else:
+            st.info("No resume improvements found.")
