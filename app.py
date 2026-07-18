@@ -375,7 +375,14 @@ if question:
                 if isinstance(projects, list):
                     if projects:
                         for project in projects:
-                            st.success(project)
+                            if isinstance(project, dict):
+                                st.success(project.get("project_name", ""))
+                                st.write(project.get("description", ""))
+                                st.caption(
+                                    f"Technologies: {project.get('technologies', '')}"
+                                )
+                            else:
+                                st.success(str(project))
                     else:
                         st.info("No projects found.")
                 elif isinstance(projects, str):

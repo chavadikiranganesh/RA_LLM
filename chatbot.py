@@ -179,6 +179,19 @@ def ask_resume(
         analysis
     )
 
+    score = analysis.get("match_score", 0)
+
+    # Convert decimal to percentage if needed
+    if isinstance(score, (int, float)) and score <= 1:
+        score = int(score * 100)
+
+    analysis["match_score"] = score
+
+    analysis.setdefault(
+        "match_score",
+        0
+    )
+
     if intent == "ats":
         analysis["ats_score"] = calculate_ats_score(
             context
@@ -230,6 +243,14 @@ def compare_resume(vector_store, job_description):
     analysis = normalize_response(
         analysis
     )
+
+    score = analysis.get("match_score", 0)
+
+    # Convert decimal to percentage if needed
+    if isinstance(score, (int, float)) and score <= 1:
+        score = int(score * 100)
+
+    analysis["match_score"] = score
 
     analysis.setdefault(
         "match_score",

@@ -187,20 +187,28 @@ You are an expert technical recruiter.
 
 Extract ALL projects mentioned in the resume.
 
-For each project include:
+For each project provide:
 - Project Name
 - One-line description
-- Technologies used (if available)
-
-Do NOT skip any project.
+- Technologies used
 
 Return ONLY valid JSON.
 
 {{
     "projects":[
-        "Project Name - Description (Technologies)"
+        {{
+            "project_name":"",
+            "description":"",
+            "technologies":""
+        }}
     ]
 }}
+
+Rules:
+- Return ONLY valid JSON.
+- "projects" MUST be a list.
+- Each project MUST be an object with the above keys.
+- Do NOT return markdown.
 
 Resume:
 {context}
