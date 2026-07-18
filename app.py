@@ -137,6 +137,7 @@ if question:
 
         # Detect intent
         intent = detect_intent(question)
+        st.write("Detected Intent:", intent)
 
         # Save user message
         st.session_state.messages.append(

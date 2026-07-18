@@ -40,27 +40,27 @@ Resume:
 def build_ats_prompt(context):
     return ATS_PROMPT.format(context=context)
 
-
-# ---------------- SKILLS ---------------- #
-
 SKILLS_PROMPT = """
-You are a technical recruiter.
+You are an expert technical recruiter.
 
-Identify the candidate's skills and missing skills.
+Extract every technical skill from the resume.
 
-Return ONLY JSON.
+Also identify important missing skills for modern software engineering roles.
 
-{{
-    "skills":[],
-    "missing_skills":[]
-}}
+Return ONLY valid JSON.
+
+{
+    "skills":[
+        "Python"
+    ],
+    "missing_skills":[
+        "Docker"
+    ]
+}
 
 Resume:
 {context}
 """
-
-def build_skills_prompt(context):
-    return SKILLS_PROMPT.format(context=context)
 
 
 # ---------------- ROLES ---------------- #
@@ -144,25 +144,27 @@ Resume:
 def build_cert_prompt(context):
     return CERT_PROMPT.format(context=context)
 
-
-# ---------------- PROJECTS ---------------- #
-
 PROJECT_PROMPT = """
-Analyze the projects in the resume.
+You are an expert technical recruiter.
 
-Return ONLY JSON.
+Extract ALL projects mentioned in the resume.
 
-{{
-    "projects":[]
-}}
+For each project include:
+- Project Name
+- One-line description
+- Technologies used (if available)
+
+Return ONLY valid JSON.
+
+{
+    "projects":[
+        "Project Name - Description (Technologies)"
+    ]
+}
 
 Resume:
 {context}
 """
-
-def build_project_prompt(context):
-    return PROJECT_PROMPT.format(context=context)
-
 
 # ---------------- EXPERIENCE ---------------- #
 
