@@ -1,3 +1,5 @@
+import json
+
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -5,6 +7,23 @@ from reportlab.platypus import (
 )
 
 from reportlab.lib.styles import getSampleStyleSheet
+
+
+def format_value(value):
+    """
+    Convert dictionaries/lists into readable text for PDF.
+    """
+
+    if value is None:
+        return ""
+
+    if isinstance(value, dict):
+        return json.dumps(value, indent=2)
+
+    if isinstance(value, list):
+        return "\n".join(str(item) for item in value)
+
+    return str(value)
 
 
 def create_pdf(analysis):
@@ -52,7 +71,7 @@ def create_pdf(analysis):
 
         story.append(
             Paragraph(
-                analysis.get("summary"),
+                format_value(analysis.get("summary")),
                 styles["BodyText"]
             )
         )
@@ -72,7 +91,7 @@ def create_pdf(analysis):
 
         story.append(
             Paragraph(
-                analysis.get("answer"),
+                format_value(analysis.get("answer")),
                 styles["BodyText"]
             )
         )
@@ -96,7 +115,7 @@ def create_pdf(analysis):
 
                 story.append(
                     Paragraph(
-                        "• " + str(item),
+                        "• " + format_value(item),
                         styles["BodyText"]
                     )
                 )
@@ -130,10 +149,12 @@ def create_pdf(analysis):
 
         story.append(
             Paragraph(
-                analysis.get("experience"),
+                format_value(analysis.get("experience")),
                 styles["BodyText"]
             )
         )
+
+        story.append(Spacer(1, 12))
 
     doc.build(story)
 
