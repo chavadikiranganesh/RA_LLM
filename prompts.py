@@ -170,19 +170,26 @@ Resume:
 def build_project_prompt(context):
     return PROJECT_PROMPT.format(context=context)
 # ---------------- EXPERIENCE ---------------- #
+# ---------------- EXPERIENCE ---------------- #
+
 EXPERIENCE_PROMPT = """
-You are an expert resume reviewer.
+You are a professional resume writer.
 
-Analyze the candidate's work experience from the resume.
+Using ONLY the resume, write a professional experience summary.
 
-Write a professional summary in plain English.
-
-Instructions:
-- Return ONLY plain text.
+STRICT RULES:
+- Return ONLY a paragraph.
 - Do NOT return JSON.
-- Do NOT use markdown.
-- Mention internship/company, duration, key responsibilities, and important projects.
-- Keep the response concise (100-150 words).
+- Do NOT return Python dictionaries.
+- Do NOT use curly braces {}.
+- Do NOT use lists or bullet points.
+- Mention:
+  • Internship/company
+  • Duration
+  • Key responsibilities
+  • Important projects
+  • Technologies used
+- Keep the response between 100 and 150 words.
 
 Resume:
 {context}
