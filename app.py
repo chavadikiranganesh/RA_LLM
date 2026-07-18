@@ -62,15 +62,19 @@ with st.sidebar:
 
     if uploaded_file is not None:
 
-        if st.session_state.vector_store is None:
+        with st.spinner("📄 Processing Resume..."):
+            st.session_state.vector_store = process_pdf(
+                uploaded_file
+            )
 
-            with st.spinner("📄 Processing Resume..."):
+        # 👇 ADD HERE
+        st.write("Uploaded Resume:", uploaded_file.name)
+        st.write("Vector Store ID:", id(st.session_state.vector_store))
 
-                st.session_state.vector_store = process_pdf(
-                    uploaded_file
-                )
+        st.session_state.messages = []
+        st.session_state.chat_history = []
 
-            st.success("✅ Resume uploaded successfully!")
+        st.success("✅ Resume uploaded successfully!")
 
     st.divider()
 
