@@ -285,6 +285,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
 
         st.markdown(message["content"])
+
 # ---------------- Chat ---------------- #
 
 question = st.chat_input(
@@ -315,9 +316,9 @@ if question:
             st.markdown(question)
 
         # Get AI response
-       with st.spinner(
-    "🤖 Reading Resume • Retrieving Knowledge • Generating AI Response..."
-):
+        with st.spinner(
+            "🤖 Reading Resume • Retrieving Knowledge • Generating AI Response..."
+        ):
 
             analysis, docs = ask_resume(
                 question,
@@ -333,6 +334,7 @@ if question:
                 st.warning(assistant_reply)
 
             # ---------------- SUMMARY ---------------- #
+
             if intent == "summary":
 
                 assistant_reply = analysis.get("summary", "")
@@ -403,6 +405,7 @@ if question:
                     else:
                         st.success(str(roles))
 
+            # ---------------- SKILLS ---------------- #
 
             elif intent == "skills":
 
@@ -435,6 +438,7 @@ if question:
                         else:
                             st.warning(format_response(missing))
 
+            # ---------------- INTERVIEW ---------------- #
 
             elif intent == "interview":
 
@@ -458,6 +462,7 @@ if question:
                     else:
                         st.info(format_response(questions))
 
+            # ---------------- IMPROVE ---------------- #
 
             elif intent == "improve":
 
@@ -486,6 +491,7 @@ if question:
                     else:
                         st.success(str(improvements))
 
+            # ---------------- CERTIFICATIONS ---------------- #
 
             elif intent == "certifications":
 
@@ -509,8 +515,6 @@ if question:
 
                     else:
                         st.info(format_response(certs))
-
-
             # ---------------- PROJECTS ---------------- #
 
             elif intent == "projects":
