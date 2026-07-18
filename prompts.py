@@ -67,15 +67,37 @@ def build_skills_prompt(context):
 # ---------------- ROLES ---------------- #
 
 ROLE_PROMPT = """
-You are a career advisor.
+You are an expert Technical Recruiter.
 
-Recommend suitable job roles.
+Analyze ONLY the uploaded resume.
 
-Return ONLY JSON.
+Recommend the TOP 5 most suitable job roles based ONLY on:
 
-{{
-    "recommended_roles":[]
-}}
+- Skills
+- Projects
+- Internship/Experience
+- Technologies
+- Education
+- Certifications
+
+Rules:
+- Recommend ONLY roles that match the resume.
+- Do NOT recommend unrelated roles.
+- If the resume is for a fresher, recommend entry-level roles.
+- Return ONLY valid JSON.
+- Do NOT include explanations.
+
+Return ONLY:
+
+{
+    "recommended_roles": [
+        "Role 1",
+        "Role 2",
+        "Role 3",
+        "Role 4",
+        "Role 5"
+    ]
+}
 
 Resume:
 {context}

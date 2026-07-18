@@ -67,10 +67,6 @@ with st.sidebar:
                 uploaded_file
             )
 
-        # 👇 ADD HERE
-        st.write("Uploaded Resume:", uploaded_file.name)
-        st.write("Vector Store ID:", id(st.session_state.vector_store))
-
         st.session_state.messages = []
         st.session_state.chat_history = []
 
@@ -198,17 +194,39 @@ if question:
 
             elif intent == "roles":
 
-                roles = analysis.get(
-                    "recommended_roles",
-                    []
-                )
+                roles = analysis.get("recommended_roles", [])
 
-                assistant_reply = "\n".join(roles)
+                if isinstance(roles, list):
+                    assistant_reply = "\n".join(
+                        str(role) for role in roles
+                    )
+
+                elif isinstance(roles, str):
+                    assistant_reply = roles
+
+                elif isinstance(roles, dict):
+                    assistant_reply = "\n".join(
+                        f"{k}: {v}" for k, v in roles.items()
+                    )
+
+                else:
+                    assistant_reply = str(roles)
 
                 st.subheader("💼 Recommended Roles")
 
-                for role in roles:
-                    st.success(role)
+                if isinstance(roles, list):
+                    for role in roles:
+                        st.success(role)
+
+                elif isinstance(roles, str):
+                    st.success(roles)
+
+                elif isinstance(roles, dict):
+                    for k, v in roles.items():
+                        st.success(f"{k}: {v}")
+
+                else:
+                    st.success(str(roles))
 
             # ---------------- SKILLS ---------------- #
 
