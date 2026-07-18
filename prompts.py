@@ -49,20 +49,21 @@ Also identify important missing skills for modern software engineering roles.
 
 Return ONLY valid JSON.
 
-{
+{{
     "skills":[
         "Python"
     ],
     "missing_skills":[
         "Docker"
     ]
-}
+}}
 
 Resume:
 {context}
 """
 
-
+def build_skills_prompt(context):
+    return SKILLS_PROMPT.format(context=context)
 # ---------------- ROLES ---------------- #
 
 ROLE_PROMPT = """
@@ -156,16 +157,18 @@ For each project include:
 
 Return ONLY valid JSON.
 
-{
+{{
     "projects":[
         "Project Name - Description (Technologies)"
     ]
-}
+}}
 
 Resume:
 {context}
 """
 
+def build_project_prompt(context):
+    return PROJECT_PROMPT.format(context=context)
 # ---------------- EXPERIENCE ---------------- #
 
 EXPERIENCE_PROMPT = """
