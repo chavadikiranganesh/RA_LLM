@@ -27,6 +27,64 @@ def format_response(value):
     return str(value)
 
 
+def display_project(project):
+    """
+    Display a project as a styled card with technology chips.
+    """
+
+    technologies = project.get("technologies", "")
+
+    if isinstance(technologies, str):
+        tech_list = [
+            t.strip()
+            for t in technologies.split(",")
+            if t.strip()
+        ]
+    else:
+        tech_list = technologies
+
+    tech_html = ""
+
+    for tech in tech_list:
+        tech_html += f'<span class="tech-chip">{tech}</span>'
+
+    st.markdown(
+        f"""
+        <div class="project-card">
+
+            <div class="project-title">
+                📂 {project.get("project_name", "Project")}
+            </div>
+
+            <div class="project-desc">
+                {project.get("description", "No description")}
+            </div>
+
+            {tech_html}
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def display_chips(items):
+    """
+    Display items as styled skill chips using CSS classes.
+    """
+
+    if not items:
+        st.info("No items found.")
+        return
+
+    html = ""
+
+    for item in items:
+        html += f'<span class="skill-chip">{item}</span>'
+
+    st.markdown(html, unsafe_allow_html=True)
+
+
 # ---------------- Page Config ---------------- #
 
 st.set_page_config(
@@ -275,11 +333,7 @@ if question:
                         st.subheader("✅ Skills")
 
                         if isinstance(skills, list):
-                            if skills:
-                                for skill in skills:
-                                    st.success(skill)
-                            else:
-                                st.info("No skills found.")
+                            display_chips(skills)
                         else:
                             st.success(format_response(skills))
 
@@ -288,11 +342,7 @@ if question:
                         st.subheader("⚠ Missing Skills")
 
                         if isinstance(missing, list):
-                            if missing:
-                                for skill in missing:
-                                    st.warning(skill)
-                            else:
-                                st.info("No missing skills found.")
+                            display_chips(missing)
                         else:
                             st.warning(format_response(missing))
 
@@ -402,17 +452,7 @@ if question:
 
                                 if isinstance(project, dict):
 
-                                    st.success(f"📂 {project.get('project_name', 'Project')}")
-
-                                    st.write(
-                                        f"**Description:** {project.get('description', 'Not available')}"
-                                    )
-
-                                    st.caption(
-                                        f"Technologies: {project.get('technologies', 'Not available')}"
-                                    )
-
-                                    st.divider()
+                                    display_project(project)
 
                                 else:
 
