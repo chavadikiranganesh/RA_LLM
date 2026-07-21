@@ -206,77 +206,65 @@ st.caption(
     "Powered by Llama 3.3 • Groq • LangChain • HuggingFace • FAISS"
 )
 
-st.write(
-    """
-Analyze your resume using Generative AI to receive
-professional career insights instantly.
+st.markdown("""
+<div style="text-align:center">
 
-### 🚀 Features
+# 🚀 Your AI Career Assistant
 
-- 📄 Resume Summary
-- 🎯 ATS Score
-- 💻 Skills Analysis
-- 💼 Recommended Job Roles
-- 📂 Project Analysis
-- 🎤 Interview Questions
-- 📚 Certification Suggestions
-- 📝 Resume Improvements
-- 🤖 Resume Chatbot
-- 🎯 Resume vs Job Description Matching
-"""
-)
+Analyze your resume using AI.
+
+📄 Resume Summary • 💻 Skills • 🎯 JD Match
+
+---
+
+⬅️ Upload your PDF Resume from the left sidebar to get started.
+
+</div>
+""", unsafe_allow_html=True)
 
 st.divider()
 
 
 # ==========================================================
-# Feature Dashboard
+# AI Feature Dashboard
 # ==========================================================
 
-features = [
+st.subheader("✨ Core Features")
 
-    (
-        "📄",
-        "Resume Summary",
-        "Generate an AI summary."
-    ),
+col1, col2, col3 = st.columns(3)
 
-    (
-        "🎯",
-        "ATS Score",
-        "Measure ATS compatibility."
-    ),
+with col1:
+    with st.container(border=True):
+        st.markdown("## 📄")
+        st.markdown("### Resume Summary")
+        st.caption("AI-generated summary")
 
-    (
-        "💼",
-        "JD Matching",
-        "Compare resume with Job Description."
-    ),
+    with st.container(border=True):
+        st.markdown("## 💻")
+        st.markdown("### Skills Analysis")
+        st.caption("Skills & Missing Skills")
 
-    (
-        "🤖",
-        "Resume Chat",
-        "Ask AI anything about your resume."
-    )
+with col2:
+    with st.container(border=True):
+        st.markdown("## 🎯")
+        st.markdown("### ATS Analysis")
+        st.caption("ATS Score & Keywords")
 
-]
+    with st.container(border=True):
+        st.markdown("## 💼")
+        st.markdown("### Job Roles")
+        st.caption("AI Career Suggestions")
 
-dashboard_columns = st.columns(4)
+with col3:
+    with st.container(border=True):
+        st.markdown("## 🤖")
+        st.markdown("### Resume Chat")
+        st.caption("Chat with your Resume")
 
-for column, (icon, title, description) in zip(
-    dashboard_columns,
-    features
-):
-
-    with column:
-
-        with st.container(border=True):
-
-            st.subheader(icon)
-
-            st.markdown(f"### {title}")
-
-            st.caption(description)
+    with st.container(border=True):
+        st.markdown("## 🎯")
+        st.markdown("### JD Matching")
+        st.caption("Compare with Job Description")
 
 st.divider()
 
@@ -287,11 +275,9 @@ st.divider()
 
 with st.sidebar:
 
-    st.header("📂 Resume Upload")
+    st.header("Upload Resume")
 
-    st.write(
-        "Upload your resume in PDF format."
-    )
+    st.caption("Upload your PDF resume to start the AI analysis.")
 
     uploaded_file = st.file_uploader(
 
@@ -315,7 +301,7 @@ with st.sidebar:
         if current_file != previous_file:
 
             with st.spinner(
-                "📄 Processing Resume..."
+                "Processing resume..."
             ):
 
                 st.session_state.vector_store = process_pdf(
@@ -333,14 +319,14 @@ with st.sidebar:
             st.session_state.analysis = None
 
             st.success(
-                "✅ Resume uploaded successfully!"
+                "Resume uploaded successfully!"
             )
 
     st.divider()
 
     # ------------------------------------------------------
 
-    st.header("💼 Job Description")
+    st.header("Job Description")
 
     job_description = st.text_area(
 
@@ -356,25 +342,25 @@ with st.sidebar:
 
     # ------------------------------------------------------
 
-    st.header("💡 Quick Questions")
+    st.header("Quick Questions")
 
     quick_questions = [
 
-        "📄 Summarize my resume",
+        "Summarize my resume",
 
-        "🎯 Give my ATS Score",
+        "Give my ATS score",
 
-        "💻 Show my technical skills",
+        "Show my technical skills",
 
-        "💼 Recommend suitable roles",
+        "Recommend suitable roles",
 
-        "📂 Explain my projects",
+        "Explain my projects",
 
-        "🎤 Generate interview questions",
+        "Generate interview questions",
 
-        "📚 Suggest certifications",
+        "Suggest certifications",
 
-        "📝 Improve my resume"
+        "Improve my resume"
 
     ]
 
@@ -386,31 +372,25 @@ with st.sidebar:
 
     # ------------------------------------------------------
 
-    st.header("⚡ Tech Stack")
+    st.header("Tech Stack")
 
-    left, right = st.columns(2)
+    col1, col2 = st.columns(2)
 
-    with left:
-
+    with col1:
         st.success("Groq")
-
         st.success("LangChain")
-
         st.success("FAISS")
 
-    with right:
-
-        st.success("Llama 3")
-
-        st.success("HF")
-
+    with col2:
+        st.success("Llama 3.3")
+        st.success("Hugging Face")
         st.success("Streamlit")
 
     st.divider()
 
     if st.button(
 
-        "🗑 Clear Chat",
+        "Clear Chat",
 
         use_container_width=True
 
@@ -431,28 +411,34 @@ if st.session_state.vector_store is None:
 
     with st.container(border=True):
 
-        st.subheader("👋 Welcome to AI Resume Analyzer")
+                st.markdown("# 👋 Welcome")
 
-        st.markdown("""
-Upload your resume and unlock AI-powered career insights.
+                st.write(
+                    "Upload your resume and unlock AI-powered career insights "
+                    "using Llama 3.3, Groq, LangChain and RAG."
+                )
 
-### 🚀 What You Can Do
+                st.divider()
 
-- 📄 Resume Summary
-- 🎯 ATS Score
-- 💻 Skills Analysis
-- 💼 Recommended Roles
-- 📂 Project Analysis
-- 🎤 Interview Questions
-- 📚 Certification Suggestions
-- 📝 Resume Improvements
-- 🤖 Chat with Your Resume
-- 🎯 Resume vs Job Description Matching
+                col1, col2 = st.columns(2)
 
-Upload a PDF resume from the sidebar to get started.
-""")
+                with col1:
+                    st.success("📄 Resume Summary")
+                    st.success("🎯 ATS Score")
+                    st.success("💻 Skills Analysis")
+                    st.success("💼 Job Role Recommendation")
+                    st.success("📂 Project Analysis")
 
-        st.info("📌 Upload your resume to begin.")
+                with col2:
+                    st.success("🎤 Interview Questions")
+                    st.success("📚 Certification Suggestions")
+                    st.success("📝 Resume Improvements")
+                    st.success("🤖 Resume Chatbot")
+                    st.success("🎯 Resume vs JD Matching")
+
+                st.divider()
+
+                st.info("⬅️ Upload your PDF resume from the sidebar to begin.")
 
 
 # ==========================================================
@@ -464,6 +450,32 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
 
         st.markdown(message["content"])
+
+
+# ==========================================================
+# Example Prompts
+# ==========================================================
+
+if st.session_state.vector_store:
+
+    st.markdown("### Try asking")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.info("Summarize my resume")
+        st.info("Show my technical skills")
+        st.info("Recommend suitable roles")
+
+    with col2:
+        st.info("Explain my projects")
+        st.info("Generate interview questions")
+        st.info("Suggest certifications")
+
+    with col3:
+        st.info("Improve my resume")
+        st.info("Compare with a Job Description")
+        st.info("What is my strongest skill?")
 
 
 # ==========================================================
@@ -964,8 +976,6 @@ st.markdown(
         <strong>HuggingFace</strong> •
         <strong>FAISS</strong>
     </p>
-
-    <p>Built with ❤️ using Streamlit</p>
 
     </div>
     """,

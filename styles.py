@@ -6,10 +6,6 @@ def load_css():
        Main App
     ========================================================== */
 
-    .stApp{
-        background-color:#0F172A;
-    }
-
     .block-container{
         padding-top:2rem;
         padding-bottom:2rem;
@@ -17,19 +13,23 @@ def load_css():
     }
 
     /* ==========================================================
+       Cards
+    ========================================================== */
+
+    div[data-testid="stMetric"],
+    div[data-testid="stVerticalBlock"] > div:has(> div[data-testid="stMetric"]){
+
+        border-radius:15px;
+        border:1px solid rgba(128,128,128,0.25);
+        padding:15px;
+    }
+
+    /* ==========================================================
        Sidebar
     ========================================================== */
 
     section[data-testid="stSidebar"]{
-        background:#1E293B;
-        border-right:1px solid #334155;
-    }
-
-    section[data-testid="stSidebar"] h1,
-    section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3,
-    section[data-testid="stSidebar"] h4{
-        color:white;
+        border-right:1px solid rgba(128,128,128,0.2);
     }
 
     /* ==========================================================
@@ -39,17 +39,19 @@ def load_css():
     .stButton>button{
 
         width:100%;
-        border-radius:12px;
         height:48px;
-        font-weight:600;
+        border-radius:12px;
+        border:none;
         background:#2563EB;
         color:white;
-        border:none;
+        font-weight:600;
+        transition:0.3s;
     }
 
     .stButton>button:hover{
 
         background:#1D4ED8;
+        transform:translateY(-2px);
     }
 
     /* ==========================================================
@@ -59,17 +61,19 @@ def load_css():
     .stDownloadButton>button{
 
         width:100%;
-        border-radius:12px;
         height:48px;
+        border-radius:12px;
+        border:none;
         background:#10B981;
         color:white;
-        border:none;
         font-weight:600;
+        transition:0.3s;
     }
 
     .stDownloadButton>button:hover{
 
         background:#059669;
+        transform:translateY(-2px);
     }
 
     /* ==========================================================
@@ -79,21 +83,9 @@ def load_css():
     div[data-testid="stChatMessage"]{
 
         border-radius:15px;
-        border:1px solid #334155;
-        padding:10px;
+        border:1px solid rgba(128,128,128,0.25);
+        padding:12px;
         margin-bottom:10px;
-    }
-
-    /* ==========================================================
-       Metric Cards
-    ========================================================== */
-
-    div[data-testid="stMetric"]{
-
-        background:#1E293B;
-        border:1px solid #334155;
-        border-radius:15px;
-        padding:18px;
     }
 
     /* ==========================================================
@@ -104,21 +96,11 @@ def load_css():
 
         border:2px dashed #3B82F6;
         border-radius:15px;
-        padding:10px;
+        padding:12px;
     }
 
     /* ==========================================================
-       Progress Bar
-    ========================================================== */
-
-    div[data-testid="stProgress"]{
-
-        margin-top:10px;
-        margin-bottom:10px;
-    }
-
-    /* ==========================================================
-       Expanders
+       Expander
     ========================================================== */
 
     details{
@@ -134,7 +116,7 @@ def load_css():
 
         border:none;
         height:1px;
-        background:#334155;
+        background:rgba(128,128,128,0.3);
     }
 
     </style>
