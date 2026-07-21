@@ -27,10 +27,20 @@ from prompts import (
 
 load_dotenv()
 
-groq_api_key = (
-    st.secrets.get("GROQ_API_KEY")
-    or os.getenv("GROQ_API_KEY")
-)
+# ---------------------------------------------------------
+# Load Groq API Key
+# ---------------------------------------------------------
+
+try:
+    groq_api_key = st.secrets["GROQ_API_KEY"]
+except Exception:
+    groq_api_key = os.getenv("GROQ_API_KEY")
+
+if not groq_api_key:
+    raise ValueError(
+        "GROQ_API_KEY not found. Add it to .env for local development "
+        "or secrets.toml for Streamlit Cloud."
+    )
 
 llm = ChatGroq(
     groq_api_key=groq_api_key,
@@ -75,7 +85,8 @@ def normalize_response(analysis):
         "matching_skills",
         "strengths",
         "weaknesses",
-        "suggestions"
+        "suggestions",
+        "ats_keywords"
     ]
 
     for field in list_fields:
@@ -162,7 +173,7 @@ def ask_resume(
 
     try:
 
-        analysis = json.loads(content)
+        analysis = json.loads(content.strip())
         if intent == "general" and isinstance(analysis.get("answer"), str):
             analysis["answer"] = analysis["answer"].strip()
 
@@ -193,11 +204,15 @@ def ask_resume(
 
     score = analysis.get("match_score", 0)
 
-    # Convert decimal to percentage if needed
-    if isinstance(score, (int, float)) and score <= 1:
-        score = int(score * 100)
+    try:
+        score = float(score)
+    except (TypeError, ValueError):
+        score = 0
 
-    analysis["match_score"] = score
+    if score <= 1:
+        score *= 100
+
+    analysis["match_score"] = max(0, min(100, int(score)))
 
     analysis.setdefault(
         "match_score",
@@ -218,7 +233,7 @@ def compare_resume(vector_store, job_description):
 
     docs = vector_store.similarity_search(
         job_description,
-        k=5
+        k=12
     )
 
     context = "\n\n".join(
@@ -238,7 +253,7 @@ def compare_resume(vector_store, job_description):
     )
 
     try:
-        analysis = json.loads(content)
+        analysis = json.loads(content.strip())
 
     except json.JSONDecodeError:
 
@@ -249,16 +264,21 @@ def compare_resume(vector_store, job_description):
             "strengths": [],
             "weaknesses": [],
             "suggestions": [],
-            "resume_improvements": []
+            "resume_improvements": [],
+            "ats_keywords": []
         }
 
     score = analysis.get("match_score", 0)
 
-    # Convert decimal (0-1) to percentage (0-100)
-    if isinstance(score, (int, float)) and score <= 1:
-        score = int(score * 100)
+    try:
+        score = float(score)
+    except (TypeError, ValueError):
+        score = 0
 
-    analysis["match_score"] = score
+    if score <= 1:
+        score *= 100
+
+    analysis["match_score"] = max(0, min(100, int(score)))
 
     analysis = normalize_response(
         analysis
